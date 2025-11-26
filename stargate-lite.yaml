@@ -1,0 +1,473 @@
+# === ОСНОВНЫЕ ПАРАМЕТРЫ ===
+allow-lan: true
+mode: rule
+log-level: $LOG_LEVEL
+ipv6: $IPV6
+unified-delay: true 
+external-controller: $EXTERNAL_CONTROLLER_ADDRESS:$UI_PORT
+external-ui: $EXTERNAL_UI_PATH
+external-ui-url: $EXTERNAL_UI_URL
+secret: $UI_SECRET
+
+# === ПРОФИЛЬ ===
+#profile:
+#  store-selected: true
+
+# === SNIFFER (анализ трафика) ===
+sniffer:
+  enable: true
+  parse-pure-ip: true
+  force-dns-mapping: true
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+
+# === DNS НАСТРОЙКИ ===
+dns:
+  enable: $DNS_ENABLE
+#  prefer-h3: true
+#  use-hosts: true
+  use-system-hosts: $DNS_USE_SYSTEM_HOSTS
+#  listen: 127.0.0.1:53
+#  ipv6: false
+#  enhanced-mode: redir-host
+#  default-nameserver:
+#    - tls://1.1.1.1
+#    - tls://1.0.0.1
+#    - tls://8.8.8.8
+#    - tls://8.8.4.4
+#    - tls://9.9.9.9
+#  proxy-server-nameserver:
+#    - tls://1.1.1.1
+#    - tls://1.0.0.1
+#    - tls://8.8.8.8
+#    - tls://8.8.4.4
+#    - tls://9.9.9.9
+#    - https://cloudflare-dns.com/dns-query
+#    - https://9.9.9.9/dns-query
+#  direct-nameserver:
+#    - tls://77.88.8.8#DIRECT
+#    - https://77.88.8.8/dns-query#DIRECT
+  nameserver:
+    - system
+#    - https://cloudflare-dns.com/dns-query#PROXY
+
+# === LISTENERS (TUN + mixed) ===
+listeners:
+  - name: mixed-in
+    type: mixed
+    port: $MIXED_PORT
+  - name: tun-in
+    type: tun
+    stack: $TUN_STACK
+    auto-detect-interface: $TUN_AUTO_DETECT_INTERFACE
+    auto-route: $TUN_AUTO_ROUTE
+    auto-redirect: $TUN_AUTO_REDIRECT
+    inet4-address:
+    - $TUN_INET4_ADDRESS
+
+# === ПОДПИСКА НА ПРОКСИ ===
+proxy-providers:
+$PROVIDERS_BLOCK
+#    override:
+#      tfo: true
+#      mptcp: true
+#      udp: true
+
+# === ГРУППЫ ПРОКСИ ===
+proxy-groups:
+# --- Фиксированная группа для example.com ---
+#- name: CORP-PROXY-FIXED
+#  type: select
+#  use:
+#    - SUB1
+#  filter: 'CORP-PROXY' # ← Замените на имя нужного прокси из подписки
+
+# Главный переключатель режимов.
+  - name: SELECTOR
+    type: select
+    proxies:
+      - PROXY AUTO     # Полностью автоматический режим
+      - PROXY MANUAL   # Ручной выбор
+      - DIRECT        # Принудительный прямой доступ
+
+  # Группа для автоматического режима.
+  # Логика: Сначала пытается использовать самый быстрый прокси (PROXY FASTEST).
+  # Если он падает, переключается на группу PROXY FAILOVER, которая переберет все остальные живые прокси.
+  # Если и там все мертвы, переключится на DIRECT.
+  - name: PROXY AUTO
+    type: fallback
+    proxies:
+      - PROXY FASTEST
+      - PROXY FAILOVER
+      - DIRECT
+    url: http://www.msftncsi.com/ncsi.txt
+    # Интервал для проверки, чтобы "отлипнуть" от DIRECT/PROXY FAILOVER и вернуться к PROXY FASTEST
+    interval: 200
+
+  # Группа для выбора самого быстрого из ЖИВЫХ прокси.
+  - name: PROXY FASTEST
+    type: url-test
+    use:
+$PROVIDERS_LIST
+    url: http://www.msftncsi.com/ncsi.txt
+    # Интервал для пересортировки живых прокси по скорости
+    interval: 300
+    lazy: false
+
+  # Группа для перебора ВСЕХ живых прокси в случае отказа самого быстрого.
+  # Это гарантирует, что мы не переключимся на DIRECT, пока есть хоть один живой прокси.
+  - name: PROXY FAILOVER
+    type: fallback
+    use:
+$PROVIDERS_LIST
+    url: http://www.msftncsi.com/ncsi.txt
+    interval: 200
+
+  # Группа для ручного выбора сервера из подписки.
+  - name: PROXY MANUAL
+    type: select
+    use:
+$PROVIDERS_LIST
+
+  # Скрыть ли группу GLOBAL
+  - name: GLOBAL
+    type: select
+    hidden: false
+    proxies:
+      - PROXY AUTO
+      - PROXY MANUAL
+      - PROXY FASTEST
+      - PROXY FAILOVER
+      - DIRECT
+
+# --- Системные группы ---
+  - name: QUIC
+    type: select
+    proxies:
+      - PASS
+      - REJECT
+# --- Группы приложений (из шаблона) ---
+  - name: Telegram
+    type: select
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png
+    include-all: true
+    proxies:
+      - SELECTOR
+      - PROXY AUTO     # Полностью автоматический режим
+      - PROXY MANUAL   # Ручной выбор
+      - DIRECT        # Принудительный прямой доступ
+
+  - name: WhatsApp
+    type: select
+    icon: https://github.com/OMchik33/Whatsapp-icon/blob/master/icons/whatsapp_194x194.png?raw=true
+    include-all: true
+    proxies:
+      - SELECTOR      
+      - PROXY AUTO     # Полностью автоматический режим
+      - PROXY MANUAL   # Ручной выбор
+      - DIRECT        # Принудительный прямой доступ
+
+  - name: Steam
+    type: select
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Steam.png
+    include-all: true
+    proxies:
+      - SELECTOR    
+      - PROXY AUTO     # Полностью автоматический режим
+      - PROXY MANUAL   # Ручной выбор
+      - DIRECT        # Принудительный прямой доступ
+
+  - name: YouTube
+    type: select
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png
+    include-all: true
+    proxies:
+      - SELECTOR
+      - PROXY AUTO     # Полностью автоматический режим
+      - PROXY MANUAL   # Ручной выбор
+      - DIRECT        # Принудительный прямой доступ
+
+  - name: Twitch
+    type: select
+    icon: https://img.icons8.com/3d-fluency/94/twitch.png
+    include-all: true    
+    proxies:
+      - SELECTOR    
+      - PROXY AUTO     # Полностью автоматический режим
+      - PROXY MANUAL   # Ручной выбор
+      - DIRECT        # Принудительный прямой доступ
+
+  - name: AI & Разработка
+    type: select
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Dark/Bot.png
+    include-all: true
+    proxies:
+      - SELECTOR    
+      - PROXY AUTO     # Полностью автоматический режим
+      - PROXY MANUAL   # Ручной выбор
+      - DIRECT        # Принудительный прямой доступ
+
+  - name: GoogleGemini
+    type: select
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Dark/Bot.png
+    include-all: true
+    proxies:
+      - SELECTOR    
+      - PROXY AUTO     # Полностью автоматический режим
+      - PROXY MANUAL   # Ручной выбор
+      - DIRECT        # Принудительный прямой доступ
+
+  - name: OpenAI
+    type: select
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Dark/Bot.png
+    include-all: true
+    proxies:
+      - SELECTOR    
+      - PROXY AUTO     # Полностью автоматический режим
+      - PROXY MANUAL   # Ручной выбор
+      - DIRECT        # Принудительный прямой доступ
+
+  - name: Microsoft
+    type: select
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Dark/Microsoft.png
+    include-all: true
+    proxies:
+      - SELECTOR    
+      - PROXY AUTO     # Полностью автоматический режим
+      - PROXY MANUAL   # Ручной выбор
+      - DIRECT        # Принудительный прямой доступ
+
+  - name: Anthropic
+    type: select
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Dark/Bot.png
+    include-all: true
+    proxies:
+      - SELECTOR    
+      - PROXY AUTO     # Полностью автоматический режим
+      - PROXY MANUAL   # Ручной выбор
+      - DIRECT        # Принудительный прямой доступ
+
+  - name: Perplexity
+    type: select
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Dark/Bot.png
+    include-all: true
+    proxies:
+      - SELECTOR    
+      - PROXY AUTO     # Полностью автоматический режим
+      - PROXY MANUAL   # Ручной выбор
+      - DIRECT        # Принудительный прямой доступ
+
+# === RULE PROVIDERS (из шаблона) ===
+rule-providers:
+  telegram-domain:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/telegram.mrs
+    path: ./rule-sets/telegram-domain.mrs
+    interval: 86400
+
+  telegram-ips:
+    type: http
+    behavior: ipcidr
+    format: yaml
+    url: https://raw.githubusercontent.com/OMchik33/custom-rules/refs/heads/main/mihomo/telegram-ips.yaml
+    path: ./rule-sets/telegram-ips.yaml
+    interval: 86400
+
+  whatsapp-domain:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/whatsapp.mrs
+    path: ./rule-sets/whatsapp-domain.mrs
+    interval: 86400
+
+  steam-domain:
+    type: http
+    behavior: domain
+    format: yaml
+    url: https://raw.githubusercontent.com/OMchik33/custom-rules/refs/heads/main/mihomo/gaming-domains.yaml
+    path: ./rule-sets/steam-domain.yaml
+    interval: 86400
+
+  steam-ips:
+    type: http
+    behavior: ipcidr
+    format: yaml
+    url: https://raw.githubusercontent.com/OMchik33/custom-rules/refs/heads/main/mihomo/gaming-ips.yaml
+    path: ./rule-sets/steam-ips.yaml
+    interval: 86400
+
+  twitch-domain:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/twitch.mrs
+    path: ./rule-sets/twitch-domain.mrs
+    interval: 86400
+
+  discord_domains:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/discord.mrs
+    path: ./rule-sets/discord_domains.mrs
+    interval: 86400
+
+  google_gemini:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/google-gemini.mrs
+    path: ./rule-sets/google-gemini.mrs
+    interval: 86400
+
+  openai:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/openai.mrs
+    path: ./rule-sets/openai.mrs
+    interval: 86400
+
+  microsoft:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/microsoft.mrs
+    path: ./rule-sets/mikrosoft.mrs
+    interval: 86400      
+
+  anthropic:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/anthropic.mrs
+    path: ./rule-sets/anthropic.mrs
+    interval: 86400 
+
+  perplexity:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/perplexity.mrs
+    path: ./rule-sets/perplexity.mrs
+    interval: 86400 
+
+  discord_voiceips:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    url: https://github.com/legiz-ru/mihomo-rule-sets/raw/main/other/discord-voice-ip-list.mrs
+    path: ./rule-sets/discord_voiceips.mrs
+    interval: 86400
+
+  youtube:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/youtube.mrs
+    path: ./rule-sets/youtube.mrs
+    interval: 86400
+
+#  oisd_big:
+#    type: http
+#    behavior: domain
+#    format: mrs
+#    url: https://github.com/legiz-ru/mihomo-rule-sets/raw/main/oisd/big.mrs
+#    path: ./oisd/big.mrs
+#    interval: 86400
+
+#  ru-bundle:
+#    type: http
+#    behavior: domain
+#    format: mrs
+#    url: https://github.com/legiz-ru/mihomo-rule-sets/raw/main/ru-bundle/rule.mrs
+#    path: ./ru-bundle/rule.mrs
+#    interval: 86400
+
+  github-ai:
+    type: inline
+    behavior: classical
+    format: text
+    payload:
+
+# xAI (Grok)
+      - DOMAIN-SUFFIX,x.ai
+      - DOMAIN-SUFFIX,grok.x.ai
+      - DOMAIN-SUFFIX,api.x.ai
+      - DOMAIN-KEYWORD,grok
+
+# Hugging Face
+      - DOMAIN-SUFFIX,huggingface.co
+      - DOMAIN-SUFFIX,hf.co
+      - DOMAIN-SUFFIX,huggingface.com
+      - DOMAIN-KEYWORD,huggingface
+
+# Midjourney & Creative AI
+      - DOMAIN-SUFFIX,midjourney.com
+      - DOMAIN-SUFFIX,cdn.midjourney.com
+      - DOMAIN-KEYWORD,midjourney
+      - DOMAIN-SUFFIX,stability.ai
+      - DOMAIN-SUFFIX,stablediffusionweb.com
+      - DOMAIN-SUFFIX,dreamstudio.ai
+      - DOMAIN-SUFFIX,runwayml.com
+      - DOMAIN-SUFFIX,runway.ml
+
+# Character.AI & Others
+      - DOMAIN-SUFFIX,character.ai
+      - DOMAIN-SUFFIX,beta.character.ai
+      - DOMAIN-SUFFIX,replicate.com
+      - DOMAIN-SUFFIX,cohere.ai
+      - DOMAIN-SUFFIX,cohere.com
+
+# Development Tools
+      - DOMAIN-SUFFIX,jetbrains.com
+      - DOMAIN-SUFFIX,replit.com
+      - DOMAIN-SUFFIX,repl.it
+      - DOMAIN-SUFFIX,stackoverflow.com
+      - DOMAIN-SUFFIX,docker.com
+      - DOMAIN-SUFFIX,docker.io
+      - DOMAIN-SUFFIX,npmjs.com
+      - DOMAIN-SUFFIX,pypi.org
+
+# === ПРАВИЛА МАРШРУТИЗАЦИИ ===
+rules:
+# --- 1. Корпоративный ресурс: строго через фиксированный прокси ---
+#- DOMAIN-SUFFIX,example.com,CORP-PROXY-FIXED
+# --- 2. Безопасность: блокировка уязвимых UDP портов ---
+#- AND,((NETWORK,udp),(DST-PORT,135)),REJECT
+#- AND,((NETWORK,udp),(DST-PORT,137)),REJECT
+#- AND,((NETWORK,udp),(DST-PORT,138)),REJECT
+#- AND,((NETWORK,udp),(DST-PORT,139)),REJECT
+  - AND,((NETWORK,udp),(DST-PORT,443)),QUIC
+# --- 3. Приложения и сервисы ---
+  - RULE-SET,github-ai,AI & Разработка
+  - OR,((RULE-SET,telegram-domain),(RULE-SET,telegram-ips)),Telegram
+  - RULE-SET,whatsapp-domain,WhatsApp
+  - OR,((RULE-SET,discord_domains),(RULE-SET,discord_voiceips)),SELECTOR
+  - OR,((RULE-SET,steam-domain),(RULE-SET,steam-ips)),Steam
+  - RULE-SET,anthropic,Anthropic
+  - RULE-SET,perplexity,Perplexity      
+  - RULE-SET,google_gemini,GoogleGemini
+  - RULE-SET,openai,OpenAI
+  - RULE-SET,microsoft,Microsoft   
+  - RULE-SET,twitch-domain,Twitch
+  - RULE-SET,youtube,YouTube  
+#  - RULE-SET,ru-bundle,SELECTOR
+# --- 4. Инструменты проверки IP ---
+  - OR,((DOMAIN,ipwho.is),(DOMAIN,api.ip.sb),(DOMAIN,ipapi.co),(DOMAIN,ipinfo.io)),SELECTOR
+# --- 5. Реклама ---
+#  - RULE-SET,oisd_big,REJECT
+# --- 6. TUN интерфейс и mixed ---
+  - IN-NAME,tun-in,SELECTOR
+  - IN-NAME,mixed-in,SELECTOR
+# --- 7. Весь остальной трафик ---
+  - MATCH,SELECTOR
