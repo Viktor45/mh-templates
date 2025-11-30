@@ -130,6 +130,38 @@ $PROVIDERS_LIST
     use:
 $PROVIDERS_LIST
 
+  - name: PROXYRU AUTO
+    type: fallback
+    proxies:
+      - PROXYRU FASTEST
+      - PROXYRU FAILOVER
+      - DIRECT
+    url: http://www.msftncsi.com/ncsi.txt
+    filter: '(?i)🇷🇺 |RU'  # ← Замените на префикс нужного прокси из подписки
+    # Интервал для проверки, чтобы "отлипнуть" от DIRECT/PROXY FAILOVER и вернуться к PROXY FASTEST
+    interval: 200
+
+  # Группа для выбора самого быстрого из ЖИВЫХ прокси.
+  - name: PROXYRU FASTEST
+    type: url-test
+    use:
+$PROVIDERS_LIST
+    url: http://www.msftncsi.com/ncsi.txt
+    filter: '(?i)🇷🇺 |RU'
+    # Интервал для пересортировки живых прокси по скорости
+    interval: 300
+    lazy: false
+
+  # Группа для перебора ВСЕХ живых прокси в случае отказа самого быстрого.
+  # Это гарантирует, что мы не переключимся на DIRECT, пока есть хоть один живой прокси.
+  - name: PROXYRU FAILOVER
+    type: fallback
+    use:
+$PROVIDERS_LIST
+    url: http://www.msftncsi.com/ncsi.txt
+    filter: '(?i)🇷🇺 |RU' 
+    interval: 200
+
   # Скрыть ли группу GLOBAL
   - name: GLOBAL
     type: select
@@ -353,6 +385,7 @@ $PROVIDERS_LIST
     include-all: true
     proxies:
       - SELECTOR
+      - PROXYRU AUTO   
       - PROXY AUTO
       - PROXY MANUAL
       - DIRECT
