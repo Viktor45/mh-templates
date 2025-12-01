@@ -1,122 +1,122 @@
-# ОСНОВНЫЕ ПАРАМЕТРЫ
+# Пример опций смотрите тут https://github.com/MetaCubeX/mihomo/blob/Meta/docs/config.yaml
+# === ОСНОВНЫЕ ПАРАМЕТРЫ ===
+# Разрешить подключения с других устройств в локальной сети (например, с телефона или ноутбука)
 allow-lan: true
+
+# Режим работы: "rule" — всё решают правила внизу файла
 mode: rule
+
+# Насколько подробно писать логи (например: info, warning, debug)
 log-level: $LOG_LEVEL
+
+# Включить поддержку IPv6?
 ipv6: $IPV6
+
+# Делать задержки более плавными, чтобы не выдавать автоматизацию
 unified-delay: true
+
+# Адрес и порт для управления через веб-интерфейс (например: 0.0.0.0:9090)
 external-controller: $EXTERNAL_CONTROLLER_ADDRESS:$UI_PORT
+
+# Путь к папке с веб-интерфейсом на диске
 external-ui: $EXTERNAL_UI_PATH
+
+# Или ссылка на архив с интерфейсом в интернете (скачается автоматически)
 external-ui-url: $EXTERNAL_UI_URL
+
+# Секретный пароль для защиты доступа к веб-панели
 secret: $UI_SECRET
 
-# ZKEEN geodata
+# === ГЕОДАННЫЕ (ZKEEN) ===
+# Включить использование улучшенных списков стран и сайтов от ZKEEN
 geodata-mode: true
+
+# Ссылки на файлы с правилами по странам (IP) и сайтам (домены)
 geox-url:
   geosite: "https://github.com/jameszeroX/zkeen-domains/releases/latest/download/zkeen.dat"
   geoip: "https://github.com/jameszeroX/zkeen-ip/releases/latest/download/zkeenip.dat"
 
-# Анализ трафика
+# Автоматически обновлять эти файлы раз в сутки
+geo-auto-update: true
+geo-update-interval: 24  # Интервал обновления в часах
+
+# === АНАЛИЗ ТРАФИКА (SNIFFER) ===
+# Эта часть «подсматривает», какие домены открываются, даже если трафик зашифрован
 sniffer:
   enable: true
-  parse-pure-ip: true
-  force-dns-mapping: true
+  parse-pure-ip: true                 # Анализировать чистые IP-адреса без домена
+  force-dns-mapping: true             # Принудительно использовать DNS для определения сайта
   sniff:
     HTTP:
-      ports: [80, 8080-8880]
-      override-destination: true
+      ports: [80, 8080-8880]            # Где искать обычный веб-трафик
+      override-destination: true        # Подменять адрес назначения на найденный домен
     TLS:
-      ports: [443, 8443]
+      ports: [443, 8443]                # Где искать зашифрованный HTTPS
     QUIC:
-      ports: [443, 8443]
+      ports: [443, 8443]                # Где искать современный зашифрованный трафик
 
-# DNS НАСТРОЙКИ
+# === НАСТРОЙКИ DNS ===
+# Включить внутренний DNS-резолвер (рекомендуется при использовании TUN)
 dns:
   enable: $DNS_ENABLE
-  #  prefer-h3: true
-  #  use-hosts: true
-  use-system-hosts: $DNS_USE_SYSTEM_HOSTS
-  #  listen: 127.0.0.1:53
-  #  ipv6: false
-  #  enhanced-mode: redir-host
-  #  default-nameserver:
-  #    - tls://1.1.1.1
-  #    - tls://1.0.0.1
-  #    - tls://8.8.8.8
-  #    - tls://8.8.4.4
-  #    - tls://9.9.9.9
-  #  proxy-server-nameserver:
-  #    - tls://1.1.1.1
-  #    - tls://1.0.0.1
-  #    - tls://8.8.8.8
-  #    - tls://8.8.4.4
-  #    - tls://9.9.9.9
-  #    - https://cloudflare-dns.com/dns-query
-  #    - https://9.9.9.9/dns-query
-  #  direct-nameserver:
-  #    - tls://77.88.8.8#DIRECT
-  #    - https://77.88.8.8/dns-query#DIRECT
+  use-system-hosts: $DNS_USE_SYSTEM_HOSTS  # Использовать системный файл hosts?
   nameserver:
-    - system
-#    - https://cloudflare-dns.com/dns-query#PROXY
+    - system                           # Использовать DNS от роутера или провайдера
 
-# LISTENERS (TUN + mixed)
+# === ВХОДНЫЕ ПОДКЛЮЧЕНИЯ (TUN + mixed) ===
+# Эти слушатели принимают трафик от приложений или всей системы
 listeners:
   - name: mixed-in
-    type: mixed
-    port: $MIXED_PORT
-  - name: tun-in
-    type: tun
-    stack: $TUN_STACK
-    auto-detect-interface: $TUN_AUTO_DETECT_INTERFACE
-    auto-route: $TUN_AUTO_ROUTE
-    auto-redirect: $TUN_AUTO_REDIRECT
-    inet4-address:
-      - $TUN_INET4_ADDRESS
+    type: mixed                       # Принимает и HTTP, и SOCKS-запросы (универсальный порт)
+    port: $MIXED_PORT                 # Порт для браузеров и программ
 
-# ПОДПИСКИ НА ПРОКСИ
+  - name: tun-in
+    type: tun                         # Виртуальный сетевой адаптер для всего трафика системы
+    stack: $TUN_STACK                 # Тип сетевого стека: system, gvisor или mixed
+    auto-detect-interface: $TUN_AUTO_DETECT_INTERFACE  # Автоопределение основного сетевого интерфейса
+    auto-route: $TUN_AUTO_ROUTE       # Автоматически перенаправлять весь трафик через TUN
+    auto-redirect: $TUN_AUTO_REDIRECT # Перехватывать трафик без настройки прокси в приложениях
+    inet4-address:
+      - $TUN_INET4_ADDRESS            # IP-адрес для виртуального TUN-адаптера
+
+# === ПОДПИСКИ НА ПРОКСИ ===
+# Здесь подставляются внешние списки прокси (например, из URL)
 proxy-providers:
 $PROVIDERS_BLOCK
-#    override:
-#      tfo: true
-#      mptcp: true
-#      udp: true
 
-# ГРУППЫ ПРОКСИ
+
+# === ГРУППЫ ПРОКСИ ===
 proxy-groups:
-  # Главный переключатель режимов
+  # Главное меню: выбирай, как хочешь выходить в интернет
   - name: SELECTOR
     type: select
     proxies:
-      - PROXY AUTO # Полностью автоматический режим
-      - PROXY MANUAL # Ручной выбор
-      - DIRECT # Принудительный прямой доступ
+      - PROXY AUTO     # Всё само настраивается
+      - PROXY MANUAL   # Сам выбираю прокси
+      - DIRECT         # Иду напрямую, без прокси
 
-  # Группа для автоматического режима.
-  # Логика: Сначала пытается использовать самый быстрый прокси (PROXY FASTEST).
-  # Если он падает, переключается на группу PROXY FAILOVER, которая переберет все остальные живые прокси.
-  # Если и там все мертвы, переключится на DIRECT.
+  # Сначала пробует самый быстрый прокси PROXY FASTEST, потом — любой рабочий PROXY FAILOVER, и только в крайнем случае — напрямую DIRECT
+
   - name: PROXY AUTO
     type: fallback
     proxies:
       - PROXY FASTEST
       - PROXY FAILOVER
       - DIRECT
-    url: http://www.msftncsi.com/ncsi.txt
-    # Интервал для проверки, чтобы "отлипнуть" от DIRECT/PROXY FAILOVER и вернуться к PROXY FASTEST
-    interval: 200
+    url: http://www.msftncsi.com/ncsi.txt  # Сайт для проверки, работает ли прокси
+    # Интервал для проверки, чтобы "отлипнуть" от DIRECT/PROXY FAILOVER и вернуться к PROXY FASTEST    
+    interval: 200                            # Проверять каждые 200 секунд
 
-  # Группа для выбора самого быстрого из ЖИВЫХ прокси.
+  # Находит самый быстрый из всех рабочих прокси
   - name: PROXY FASTEST
     type: url-test
     use:
 $PROVIDERS_LIST
     url: http://www.msftncsi.com/ncsi.txt
-    # Интервал для пересортировки живых прокси по скорости
     interval: 300
     lazy: false
 
-  # Группа для перебора ВСЕХ живых прокси в случае отказа самого быстрого.
-  # Это гарантирует, что мы не переключимся на DIRECT, пока есть хоть один живой прокси.
+  # Если самый быстрый упал — пробует остальные по очереди
   - name: PROXY FAILOVER
     type: fallback
     use:
@@ -124,12 +124,13 @@ $PROVIDERS_LIST
     url: http://www.msftncsi.com/ncsi.txt
     interval: 200
 
-  # Группа для ручного выбора сервера из подписки.
+  # Ручной выбор прокси — из списка подписки
   - name: PROXY MANUAL
     type: select
     use:
 $PROVIDERS_LIST
 
+  # То же самое, но только для российских прокси (если они есть в подписке)
   - name: PROXYRU AUTO
     type: fallback
     proxies:
@@ -137,32 +138,27 @@ $PROVIDERS_LIST
       - PROXYRU FAILOVER
       - DIRECT
     url: http://www.msftncsi.com/ncsi.txt
-    filter: '(?i)🇷🇺 |RU'  # ← Замените на префикс нужного прокси из подписки
-    # Интервал для проверки, чтобы "отлипнуть" от DIRECT/PROXY FAILOVER и вернуться к PROXY FASTEST
+    filter: '(?i)🇷🇺 |RU'   # Ищет прокси с флагом 🇷🇺 или надписью "RU"
     interval: 200
 
-  # Группа для выбора самого быстрого из ЖИВЫХ прокси.
   - name: PROXYRU FASTEST
     type: url-test
     use:
 $PROVIDERS_LIST
     url: http://www.msftncsi.com/ncsi.txt
     filter: '(?i)🇷🇺 |RU'
-    # Интервал для пересортировки живых прокси по скорости
     interval: 300
     lazy: false
 
-  # Группа для перебора ВСЕХ живых прокси в случае отказа самого быстрого.
-  # Это гарантирует, что мы не переключимся на DIRECT, пока есть хоть один живой прокси.
   - name: PROXYRU FAILOVER
     type: fallback
     use:
 $PROVIDERS_LIST
     url: http://www.msftncsi.com/ncsi.txt
-    filter: '(?i)🇷🇺 |RU' 
+    filter: '(?i)🇷🇺 |RU'
     interval: 200
 
-  # Скрыть ли группу GLOBAL
+  # Объединяет все основные варианты в одном месте
   - name: GLOBAL
     type: select
     hidden: false
@@ -173,13 +169,16 @@ $PROVIDERS_LIST
       - PROXY FAILOVER
       - DIRECT
 
-  # QUIC
+  # Группа для обработки QUIC-трафика (оставлена как в оригинале, без изменений)
   - name: QUIC
     type: select
     proxies:
       - PASS
       - REJECT
 
+  # === ГРУППЫ ПО ПРИЛОЖЕНИЯМ И СЕРВИСАМ ===
+  # Каждая группа отвечает за свой тип трафика и показывает иконку в интерфейсе
+  
   # Блокировка рекламы и нежелательного контента
   #  - name: Ad-Filter
   #    type: select
@@ -189,6 +188,7 @@ $PROVIDERS_LIST
   #      - REJECT
 
   # Группы приложений
+
   - name: Telegram
     type: select
     icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png
@@ -385,7 +385,7 @@ $PROVIDERS_LIST
     include-all: true
     proxies:
       - SELECTOR
-      - PROXYRU AUTO   
+      - PROXYRU AUTO
       - PROXY AUTO
       - PROXY MANUAL
       - DIRECT
@@ -490,7 +490,8 @@ $PROVIDERS_LIST
       - PROXY MANUAL
       - DIRECT
 
-# RULE PROVIDERS
+# === ВНЕШНИЕ НАБОРЫ ПРАВИЛ ===
+# Эти правила скачиваются из интернета и обновляются автоматически
 rule-providers:
   telegram-domain:
     type: http
@@ -693,6 +694,8 @@ rule-providers:
   #    path: ./oisd/nsfw_big.mrs
   #    interval: 86400
 
+  # === ВСТРОЕННЫЙ СПИСОК ДОМЕНОВ ДЛЯ ИИ И РАЗРАБОТКИ (чтобы не дергать файлы, которые почти не обновляются) ===
+
   misc-ai:
     type: inline
     behavior: classical
@@ -710,7 +713,7 @@ rule-providers:
       - DOMAIN-SUFFIX,huggingface.com
       - DOMAIN-KEYWORD,huggingface
 
-      # Midjourney & Creative AI
+      # Midjourney и другие ИИ для изображений
       - DOMAIN-SUFFIX,midjourney.com
       - DOMAIN-SUFFIX,cdn.midjourney.com
       - DOMAIN-KEYWORD,midjourney
@@ -720,14 +723,14 @@ rule-providers:
       - DOMAIN-SUFFIX,runwayml.com
       - DOMAIN-SUFFIX,runway.ml
 
-      # Character.AI & Others
+      # Character.AI и другие
       - DOMAIN-SUFFIX,character.ai
       - DOMAIN-SUFFIX,beta.character.ai
       - DOMAIN-SUFFIX,replicate.com
       - DOMAIN-SUFFIX,cohere.ai
       - DOMAIN-SUFFIX,cohere.com
 
-      # Development Tools
+      # Инструменты для программистов
       - DOMAIN-SUFFIX,jetbrains.com
       - DOMAIN-SUFFIX,replit.com
       - DOMAIN-SUFFIX,repl.it
@@ -737,40 +740,42 @@ rule-providers:
       - DOMAIN-SUFFIX,npmjs.com
       - DOMAIN-SUFFIX,pypi.org
 
-# ПРАВИЛА МАРШРУТИЗАЦИИ
+# === ПРАВИЛА МАРШРУТИЗАЦИИ ===
+# Правила читаются сверху вниз: первое подходящее — срабатывает
 rules:
+  # Локальная сеть и сам компьютер — всегда напрямую
+  - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+  - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
+  - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
+
   # Безопасность: блокировка уязвимых UDP портов
   #- AND,((NETWORK,udp),(DST-PORT,135)),REJECT
   #- AND,((NETWORK,udp),(DST-PORT,137)),REJECT
   #- AND,((NETWORK,udp),(DST-PORT,138)),REJECT
   #- AND,((NETWORK,udp),(DST-PORT,139)),REJECT
 
-  # Локалка и DNS
-  - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
-  - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
-  - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
-  - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
-  # QUIC трафик
+  # QUIC-трафик направляется в специальную группу
   - AND,((NETWORK,udp),(DST-PORT,443)),QUIC
-  
+
   # Реклама / NSFW
   #  - RULE-SET,oisd_small,Ad-Filter
   #  - RULE-SET,oisd_big,Ad-Filter
   #  - RULE-SET,oisd_nsfw_small,Ad-Filter
   #  - RULE-SET,oisd_nsfw_big,Ad-Filter
-  
-  # IP-чекеры — всегда через SELECTOR
+
+  # Сайты для проверки своего IP — пускать через прокси, чтобы не раскрывать реальный адрес
   - OR,((DOMAIN,ipwho.is),(DOMAIN,api.ip.sb),(DOMAIN,ipapi.co),(DOMAIN,ipinfo.io),(DOMAIN,2ip.io),(DOMAIN,2ip.ru)),SELECTOR
 
   # Торренты
   - OR,((RULE-SET,torrent-clients),(RULE-SET,torrent-trackers)),Torrent-Traffic
   - RULE-SET,torrent-websites,Torrent-Traffic
-  
-  # AI Приложения и сервисы (приоритет выше)
+
+  # ИИ и разработка — выше по приоритету
   - RULE-SET,misc-ai,AI & Разработка
 
-  # Российские приложения и IP
-  #- RULE-SET,ru-app-list,DIRECT
+  # Российский трафик (по IP-геолокации)
+  #- RULE-SET,ru-app-list,DIRECT  
   - GEOIP,ru,Ru-Traffic
 
   # Приложения
@@ -786,7 +791,7 @@ rules:
   - RULE-SET,twitch-domain,Twitch
   - RULE-SET,youtube,YouTube
 
-  # CDN / облака (ZKEEN GEOIP)
+  # CDN и облака (по ZKEEN GEOIP)
   - GEOIP,akamai,AKAMAI
   - GEOIP,amazon,AMAZON
   - GEOIP,fastly,FASTLY
@@ -794,13 +799,13 @@ rules:
   - GEOIP,cloudflare,CLOUDFLARE
   - GEOIP,cdn77,CDN77
 
-  # ECH re-filter
+  # Правила для обхода блокировок с ECH
   - DOMAIN,cloudflare-ech.com,SELECTOR
   - RULE-SET,refilter_ech,DIRECT
   - RULE-SET,refilter_noech,ECH-Refilter
   - RULE-SET,refilter_ipsum,ECH-Refilter
 
-  # Облака / хостинги
+  # Облачные провайдеры и хостинги
   - GEOIP,meta,META
   - GEOIP,digitalocean,DIGITALOCEAN
   - GEOIP,hetzner,HETZNER
@@ -809,18 +814,14 @@ rules:
   - GEOIP,ovh,OVH
   - GEOIP,vultr,VULTR
 
-  # Ниже, потому что домены могут пересекаться с другими правилами выше
-  # ZKEEN geosite:
-  # domains  — заблокировано в РФ
-  # other    — ресурсы, блокирующие РФ
-  # politic  — новостные/политические
+  # Сайты, заблокированные в РФ или блокирующие РФ (по ZKEEN geosite)
   - GEOSITE,domains,Other-Domains
   - GEOSITE,other,Other-Domains
   - GEOSITE,politic,Politic-Domains
 
-  # Общий запасной контур голос/игры
+  # Общий запасной контур для голосовых и игровых портов
   - OR,((DST-PORT,596-599),(DST-PORT,1400),(DST-PORT,3478-3480),(DST-PORT,4379-4380),(DST-PORT,5222),(DST-PORT,5223),(DST-PORT,5228),(DST-PORT,5242),(DST-PORT,6250),(DST-PORT,12000-65535),(DST-PORT,27101-65535),(DST-PORT,45395),(DST-PORT,50318),(DST-PORT,59234)),SELECTOR
-  
+
   # Пример персональных правил
   #  - DST-PORT,12345,DIRECT
   #  - IP-CIDR,1.2.3.4/32,DIRECT,no-resolve
@@ -830,9 +831,10 @@ rules:
   #  - IP-CIDR,5.6.7.8/32,SELECTOR,no-resolve
   #  - DOMAIN-SUFFIX,myproxysite.com,SELECTOR
 
-  # TUN интерфейс и mixed
+
+  # Трафик, пришедший через TUN или mixed-порт — направлять в основной селектор
   - IN-NAME,tun-in,SELECTOR
   - IN-NAME,mixed-in,SELECTOR
-  
-  # Весь остальной трафик
+
+  # Всё остальное — в основной селектор
   - MATCH,SELECTOR

@@ -465,12 +465,13 @@ rules:
   - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
   - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
 
-  # --- 2. Безопасность: блокировка уязвимых UDP портов ---
+  # Безопасность: блокировка уязвимых UDP портов ---
   #- AND,((NETWORK,udp),(DST-PORT,135)),REJECT
   #- AND,((NETWORK,udp),(DST-PORT,137)),REJECT
   #- AND,((NETWORK,udp),(DST-PORT,138)),REJECT
   #- AND,((NETWORK,udp),(DST-PORT,139)),REJECT
-  # QUIC-трафик (например, YouTube) направляем в специальную группу
+
+  # QUIC-трафик направляем в специальную группу
   - AND,((NETWORK,udp),(DST-PORT,443)),QUIC
 
   # Правила для конкретных сервисов
@@ -486,10 +487,12 @@ rules:
   - RULE-SET,microsoft,Microsoft
   - RULE-SET,twitch-domain,Twitch
   - RULE-SET,youtube,YouTube
-#  - RULE-SET,ru-bundle,SELECTOR
+  #- RULE-SET,ru-bundle,SELECTOR
+
   # Инструменты для проверки своего IP — пускать через прокси, чтобы не раскрывать реальный адрес
   - OR,((DOMAIN,ipwho.is),(DOMAIN,api.ip.sb),(DOMAIN,ipapi.co),(DOMAIN,ipinfo.io)),SELECTOR
-#  - RULE-SET,oisd_big,REJECT
+  #- RULE-SET,oisd_big,REJECT
+
   # Трафик, пришедший через TUN или mixed-порт — направлять в основной селектор
   - IN-NAME,tun-in,SELECTOR
   - IN-NAME,mixed-in,SELECTOR
