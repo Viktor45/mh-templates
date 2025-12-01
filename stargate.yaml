@@ -120,7 +120,7 @@ $PROVIDERS_LIST
   - name: PROXY FAILOVER
     type: fallback
     use:
-    ##$PROVIDERS_LIST
+$PROVIDERS_LIST
     url: http://www.msftncsi.com/ncsi.txt
     interval: 200
 
