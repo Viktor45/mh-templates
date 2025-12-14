@@ -76,24 +76,25 @@ proxy-groups:
   - name: SELECTOR
     type: select
     proxies:
-      - PROXY AUTO     # Всё само настраивается
-      - PROXY MANUAL   # Сам выбираю прокси
+      - AUTO     # Всё само настраивается
+      - MANUAL   # Сам выбираю прокси
+      - RU_AUTO  # Автоматически выбирает российские прокси
       - DIRECT         # Иду напрямую, без прокси
 
   # Полностью автоматический режим
-  # Сначала пробует самый быстрый прокси PROXY FASTEST, потом — любой рабочий PROXY FAILOVER, и только в крайнем случае — напрямую DIRECT
-  - name: PROXY AUTO
+  # Сначала пробует самый быстрый прокси FASTEST, потом — любой рабочий FAILOVER, и только в крайнем случае — напрямую DIRECT
+  - name: AUTO
     type: fallback
     proxies:
-      - PROXY FASTEST
-      - PROXY FAILOVER
+      - FASTEST
+      - FAILOVER
       - DIRECT
     url: http://www.msftncsi.com/ncsi.txt  # Адрес для проверки, работает ли прокси
-    # Интервал для проверки, чтобы "отлипнуть" от DIRECT/PROXY FAILOVER и вернуться к PROXY FASTEST
+    # Интервал для проверки, чтобы "отлипнуть" от DIRECT/FAILOVER и вернуться к FASTEST
     interval: 200                            # Проверять каждые 200 секунд
 
   # Находит самый быстрый из всех рабочих прокси
-  - name: PROXY FASTEST
+  - name: FASTEST
     type: url-test
     use:
 $PROVIDERS_LIST
@@ -102,7 +103,7 @@ $PROVIDERS_LIST
     lazy: false
 
   # Если самый быстрый прокси упал — пробует остальные по очереди
-  - name: PROXY FAILOVER
+  - name: FAILOVER
     type: fallback
     use:
 $PROVIDERS_LIST
@@ -110,23 +111,23 @@ $PROVIDERS_LIST
     interval: 200
 
   # Ручной выбор прокси — из списка подписки
-  - name: PROXY MANUAL
+  - name: MANUAL
     type: select
     use:
 $PROVIDERS_LIST
 
   # То же самое, но только для российских прокси (если они есть в подписке)
-  - name: PROXYRU AUTO
+  - name: RU_AUTO
     type: fallback
     proxies:
-      - PROXYRU FASTEST
-      - PROXYRU FAILOVER
+      - RU_FASTEST
+      - RU_FAILOVER
       - DIRECT
     url: http://www.msftncsi.com/ncsi.txt
     filter: '(?i)🇷🇺 |RU'   # Ищет прокси с флагом 🇷🇺 или надписью "RU"
     interval: 200
 
-  - name: PROXYRU FASTEST
+  - name: RU_FASTEST
     type: url-test
     use:
 $PROVIDERS_LIST
@@ -135,7 +136,7 @@ $PROVIDERS_LIST
     interval: 300
     lazy: false
 
-  - name: PROXYRU FAILOVER
+  - name: RU_FAILOVER
     type: fallback
     use:
 $PROVIDERS_LIST
@@ -148,10 +149,9 @@ $PROVIDERS_LIST
     type: select
     hidden: false
     proxies:
-      - PROXY AUTO
-      - PROXY MANUAL
-      - PROXY FASTEST
-      - PROXY FAILOVER
+      - AUTO
+      - MANUAL
+      - RU_AUTO
       - DIRECT
 
   # Специальная группа для обработки QUIC-трафика
@@ -170,8 +170,8 @@ $PROVIDERS_LIST
     include-all: true
     proxies:
       - SELECTOR
-      - PROXY AUTO
-      - PROXY MANUAL
+      - AUTO
+      - MANUAL
       - DIRECT
 
   - name: WhatsApp
@@ -180,8 +180,8 @@ $PROVIDERS_LIST
     include-all: true
     proxies:
       - SELECTOR
-      - PROXY AUTO
-      - PROXY MANUAL
+      - AUTO
+      - MANUAL
       - DIRECT
 
   - name: Steam
@@ -190,8 +190,8 @@ $PROVIDERS_LIST
     include-all: true
     proxies:
       - SELECTOR
-      - PROXY AUTO
-      - PROXY MANUAL
+      - AUTO
+      - MANUAL
       - DIRECT
 
   - name: YouTube
@@ -199,10 +199,10 @@ $PROVIDERS_LIST
     icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/YouTube.png
     include-all: true
     proxies:
+      - RU_AUTO
       - SELECTOR
-      - PROXYRU AUTO   # Может быть быстрее для российских пользователей
-      - PROXY AUTO
-      - PROXY MANUAL
+      - MANUAL
+      - AUTO
       - DIRECT
 
   - name: Twitch
@@ -211,8 +211,8 @@ $PROVIDERS_LIST
     include-all: true
     proxies:
       - SELECTOR
-      - PROXY AUTO
-      - PROXY MANUAL
+      - AUTO
+      - MANUAL
       - DIRECT
 
   - name: AI & Разработка
@@ -221,8 +221,8 @@ $PROVIDERS_LIST
     include-all: true
     proxies:
       - SELECTOR
-      - PROXY AUTO
-      - PROXY MANUAL
+      - AUTO
+      - MANUAL
       - DIRECT
 
   - name: GoogleGemini
@@ -231,8 +231,8 @@ $PROVIDERS_LIST
     include-all: true
     proxies:
       - SELECTOR
-      - PROXY AUTO
-      - PROXY MANUAL
+      - AUTO
+      - MANUAL
       - DIRECT
 
   - name: OpenAI
@@ -241,8 +241,8 @@ $PROVIDERS_LIST
     include-all: true
     proxies:
       - SELECTOR
-      - PROXY AUTO
-      - PROXY MANUAL
+      - AUTO
+      - MANUAL
       - DIRECT
 
   - name: Microsoft
@@ -251,8 +251,8 @@ $PROVIDERS_LIST
     include-all: true
     proxies:
       - SELECTOR
-      - PROXY AUTO
-      - PROXY MANUAL
+      - AUTO
+      - MANUAL
       - DIRECT
 
   - name: Anthropic
@@ -261,8 +261,8 @@ $PROVIDERS_LIST
     include-all: true
     proxies:
       - SELECTOR
-      - PROXY AUTO
-      - PROXY MANUAL
+      - AUTO
+      - MANUAL
       - DIRECT
 
   - name: Perplexity
@@ -271,8 +271,8 @@ $PROVIDERS_LIST
     include-all: true
     proxies:
       - SELECTOR
-      - PROXY AUTO
-      - PROXY MANUAL
+      - AUTO
+      - MANUAL
       - DIRECT
 
 # === ПРАВИЛА ИЗ ВНЕШНИХ ИСТОЧНИКОВ ===
