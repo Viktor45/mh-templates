@@ -101,7 +101,7 @@ $PROVIDERS_LIST
     # Исключаем AWG/WARP и российские серверы (они нам не нужны для "иностранных")
     exclude-filter: "(?i)awg|warp|🇷🇺 |RU"
     # Сайт для проверки скорости
-    url: http://www.msftncsi.com/ncsi.txt
+    url: $HEALTH_CHECK_URL
     interval: 300 # Проверять каждые 5 минут
     lazy: false # Проверять сразу при запуске
 
@@ -111,7 +111,7 @@ $PROVIDERS_LIST
     use:
 $PROVIDERS_LIST
     exclude-filter: "(?i)awg|warp|🇷🇺 |RU"
-    url: http://www.msftncsi.com/ncsi.txt
+    url: $HEALTH_CHECK_URL
     interval: 200 # Проверять каждые ~3 минуты
 
   # Ручной выбор — ты сам выбираешь, какой прокси использовать
@@ -127,7 +127,7 @@ $PROVIDERS_LIST
 $PROVIDERS_LIST
     exclude-filter: "(?i)awg|warp"
     filter: "(?i)🇷🇺 |RU" # Берём ТОЛЬКО российские серверы
-    url: http://www.msftncsi.com/ncsi.txt
+    url: $HEALTH_CHECK_URL
     interval: 300
     lazy: false
 
@@ -138,7 +138,7 @@ $PROVIDERS_LIST
 $PROVIDERS_LIST
     exclude-filter: "(?i)awg|warp"
     filter: "(?i)🇷🇺 |RU"
-    url: http://www.msftncsi.com/ncsi.txt
+    url: $HEALTH_CHECK_URL
     interval: 200
 
   # Автоматика для иностранных серверов: сначала FASTEST, потом FAILOVER, иначе напрямую
@@ -148,7 +148,7 @@ $PROVIDERS_LIST
       - FASTEST
       - FAILOVER
       - DIRECT
-    url: http://www.msftncsi.com/ncsi.txt
+    url: $HEALTH_CHECK_URL
     interval: 200
 
   # Автоматика для российских серверов
@@ -158,7 +158,7 @@ $PROVIDERS_LIST
       - RU_FASTEST
       - RU_FAILOVER
       - DIRECT
-    url: http://www.msftncsi.com/ncsi.txt
+    url: $HEALTH_CHECK_URL
     interval: 200
 
   # В заграницу через Россию: использует цепочки
@@ -168,21 +168,21 @@ $PROVIDERS_LIST
       - VIA_RU_FASTEST
       - VIA_RU_FAILOVER
       - AUTO # Если через Россию не получится, то просто иностранные
-    url: http://www.msftncsi.com/ncsi.txt
+    url: $HEALTH_CHECK_URL
     interval: 200
 
   - name: VIA_RU_FASTEST
     type: url-test
     use:
 $PROVIDERS_CHAIN_LIST
-    url: http://www.msftncsi.com/ncsi.txt
+    url: $HEALTH_CHECK_URL
     interval: 300
 
   - name: VIA_RU_FAILOVER
     type: fallback
     use:
 $PROVIDERS_CHAIN_LIST
-    url: http://www.msftncsi.com/ncsi.txt
+    url: $HEALTH_CHECK_URL
     interval: 200
 
   # Главный переключатель — его видно в панели управления

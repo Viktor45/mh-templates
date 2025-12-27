@@ -89,7 +89,7 @@ proxy-groups:
       - FASTEST
       - FAILOVER
       - DIRECT
-    url: http://www.msftncsi.com/ncsi.txt  # Адрес для проверки, работает ли прокси
+    url: $HEALTH_CHECK_URL  # Адрес для проверки, работает ли прокси
     # Интервал для проверки, чтобы "отлипнуть" от DIRECT/FAILOVER и вернуться к FASTEST
     interval: 200                            # Проверять каждые 200 секунд
 
@@ -98,7 +98,7 @@ proxy-groups:
     type: url-test
     use:
 $PROVIDERS_LIST
-    url: http://www.msftncsi.com/ncsi.txt
+    url: $HEALTH_CHECK_URL
     interval: 300
     lazy: false
 
@@ -107,7 +107,7 @@ $PROVIDERS_LIST
     type: fallback
     use:
 $PROVIDERS_LIST
-    url: http://www.msftncsi.com/ncsi.txt
+    url: $HEALTH_CHECK_URL
     interval: 200
 
   # Ручной выбор прокси — из списка подписки
@@ -123,7 +123,7 @@ $PROVIDERS_LIST
       - RU_FASTEST
       - RU_FAILOVER
       - DIRECT
-    url: http://www.msftncsi.com/ncsi.txt
+    url: $HEALTH_CHECK_URL
     filter: '(?i)🇷🇺 |RU'   # Ищет прокси с флагом 🇷🇺 или надписью "RU"
     interval: 200
 
@@ -131,7 +131,7 @@ $PROVIDERS_LIST
     type: url-test
     use:
 $PROVIDERS_LIST
-    url: http://www.msftncsi.com/ncsi.txt
+    url: $HEALTH_CHECK_URL
     filter: '(?i)🇷🇺 |RU'
     interval: 300
     lazy: false
@@ -140,7 +140,7 @@ $PROVIDERS_LIST
     type: fallback
     use:
 $PROVIDERS_LIST
-    url: http://www.msftncsi.com/ncsi.txt
+    url: $HEALTH_CHECK_URL
     filter: '(?i)🇷🇺 |RU'
     interval: 200
 
