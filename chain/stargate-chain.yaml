@@ -175,6 +175,7 @@ $PROVIDERS_LIST
     type: url-test
     use:
 $PROVIDERS_CHAIN_LIST
+    exclude-filter: "(?i)awg|warp|🇷🇺 |RU"
     url: $HEALTH_CHECK_URL
     interval: 300
 
@@ -182,6 +183,7 @@ $PROVIDERS_CHAIN_LIST
     type: fallback
     use:
 $PROVIDERS_CHAIN_LIST
+    exclude-filter: "(?i)awg|warp|🇷🇺 |RU"
     url: $HEALTH_CHECK_URL
     interval: 200
 
@@ -257,9 +259,15 @@ $PROVIDERS_CHAIN_LIST
     include-all: true
     proxies:
       - RU_AUTO
-      - AUTO       
+      - RU_FASTEST
+      - RU_FAILOVER
+      - AUTO
+      - FASTEST
+      - FAILOVER 
       - MANUAL
       - VIA_RU_AUTO
+      - VIA_RU_FASTEST
+      - VIA_RU_FAILOVER
       - DIRECT
 
   - name: TWITCH

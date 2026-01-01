@@ -338,7 +338,7 @@ add_http_chain_provider() {
     interval: 3600
     override:
       dialer-proxy: RU_AUTO            # Сначала идём через RU_AUTO
-      exclude-filter: \"(?i)awg|warp\" # Исключаем AWG/WARP — они не поддерживают цепочки
+      exclude-filter: \"(?i)awg|warp|🇷🇺 |RU\" # Исключаем AWG/WARP — они не поддерживают цепочки + RU чтобы не ходить петлями
 "
     PROVIDERS_CHAIN_LIST="${PROVIDERS_CHAIN_LIST}      - ${chain_name}
 "
