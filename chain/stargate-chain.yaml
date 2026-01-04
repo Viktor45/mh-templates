@@ -99,55 +99,63 @@ proxy-groups:
     use:
 $PROVIDERS_LIST
     # Исключаем AWG/WARP и российские серверы (они нам не нужны для "иностранных")
-    exclude-filter: "(?i)awg|warp|🇷🇺 |RU"
+    exclude-filter: "(?i)🇷🇺|RU"
     # Сайт для проверки скорости
     url: $HEALTH_CHECK_URL
     interval: 300 # Проверять каждые 5 минут
     lazy: false # Проверять сразу при запуске
+    expected-status: 204
+    tolerance: 10
+    exclude-type: wireguard
 
   # Надёжный иностранный прокси (автоматически переключается, если текущий упал)
   - name: FAILOVER
     type: fallback
     use:
 $PROVIDERS_LIST
-    exclude-filter: "(?i)awg|warp|🇷🇺 |RU"
+    exclude-filter: "(?i)🇷🇺|RU"
     url: $HEALTH_CHECK_URL
     interval: 200 # Проверять каждые ~3 минуты
+    expected-status: 204
+    exclude-type: wireguard
 
   # Ручной выбор — ты сам выбираешь, какой иностранный прокси использовать
   - name: MANUAL
     type: select
     use:
 $PROVIDERS_LIST
-    exclude-filter: "(?i)🇷🇺 |RU"
+    exclude-filter: "(?i)🇷🇺|RU"
 
   # Ручной RU выбор — ты сам выбираешь, какой RU прокси использовать
   - name: RU_MANUAL
     type: select
     use:
 $PROVIDERS_LIST
-    filter: "(?i)🇷🇺 |RU" # Берём ТОЛЬКО российские серверы
+    filter: "(?i)🇷🇺|RU" # Берём ТОЛЬКО российские серверы
 
   # Быстрейший российский прокси
   - name: RU_FASTEST
     type: url-test
     use:
 $PROVIDERS_LIST
-    exclude-filter: "(?i)awg|warp"
-    filter: "(?i)🇷🇺 |RU" # Берём ТОЛЬКО российские серверы
+    filter: "(?i)🇷🇺|RU" # Берём ТОЛЬКО российские серверы
     url: $HEALTH_CHECK_URL
     interval: 300
     lazy: false
+    expected-status: 204
+    tolerance: 10
+    exclude-type: wireguard    
 
   # Надёжный российский прокси
   - name: RU_FAILOVER
     type: fallback
     use:
 $PROVIDERS_LIST
-    exclude-filter: "(?i)awg|warp"
-    filter: "(?i)🇷🇺 |RU"
+    filter: "(?i)🇷🇺|RU"
     url: $HEALTH_CHECK_URL
     interval: 200
+    expected-status: 204
+    exclude-type: wireguard        
 
   # Автоматика для иностранных серверов: сначала FASTEST, потом FAILOVER, иначе напрямую
   - name: AUTO
@@ -159,6 +167,7 @@ $PROVIDERS_LIST
       - DIRECT
     url: $HEALTH_CHECK_URL
     interval: 200
+    expected-status: 204    
 
   # Автоматика для российских серверов
   - name: RU_AUTO
@@ -170,6 +179,7 @@ $PROVIDERS_LIST
       - DIRECT
     url: $HEALTH_CHECK_URL
     interval: 200
+    expected-status: 204    
 
   # В заграницу через Россию: использует цепочки
   - name: VIA_RU_AUTO
@@ -180,22 +190,28 @@ $PROVIDERS_LIST
       - AUTO # Если через Россию не получится, то просто иностранные
     url: $HEALTH_CHECK_URL
     interval: 200
+    expected-status: 204    
 
   - name: VIA_RU_FASTEST
     type: url-test
     use:
 $PROVIDERS_CHAIN_LIST
-    exclude-filter: "(?i)awg|warp|🇷🇺 |RU"
+    exclude-filter: "(?i)🇷🇺|RU"
     url: $HEALTH_CHECK_URL
     interval: 300
+    expected-status: 204
+    tolerance: 10
+    exclude-type: wireguard        
 
   - name: VIA_RU_FAILOVER
     type: fallback
     use:
 $PROVIDERS_CHAIN_LIST
-    exclude-filter: "(?i)awg|warp|🇷🇺 |RU"
+    exclude-filter: "🇷🇺|RU"
     url: $HEALTH_CHECK_URL
     interval: 200
+    expected-status: 204
+    exclude-type: wireguard    
 
   # Главный переключатель — его видно в панели управления
   - name: SELECTOR
