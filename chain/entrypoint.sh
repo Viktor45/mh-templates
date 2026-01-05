@@ -317,11 +317,11 @@ add_http_provider() {
     PROVIDERS_BLOCK="${PROVIDERS_BLOCK}  ${name}:
     type: http
     url: \"${url}\"
-    interval: 3600
+    interval: 1800
     health-check:
       enable: true
       url: \"${HEALTH_CHECK_URL}\"
-      interval: 3600
+      interval: 1800
 "
     PROVIDERS_LIST="${PROVIDERS_LIST}      - ${name}
 "
@@ -336,7 +336,7 @@ add_http_chain_provider() {
     PROVIDERS_CHAIN_BLOCK="${PROVIDERS_CHAIN_BLOCK}  ${chain_name}:
     type: http
     url: \"${url}\"
-    interval: 3600
+    interval: 1800
     override:
       dialer-proxy: RU_AUTO         # Сначала идём через RU_AUTO
       exclude-filter: \"(?i)🇷🇺|RU\" # Исключаем RU чтобы не ходить петлями
