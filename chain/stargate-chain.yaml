@@ -105,7 +105,7 @@ $PROVIDERS_LIST
     interval: 300 # Проверять каждые 5 минут
     lazy: false # Проверять сразу при запуске
     expected-status: 204
-    tolerance: 10
+    tolerance: 50
     exclude-type: wireguard
 
   # Надёжный иностранный прокси (автоматически переключается, если текущий упал)
@@ -143,7 +143,7 @@ $PROVIDERS_LIST
     interval: 300
     lazy: false
     expected-status: 204
-    tolerance: 10
+    tolerance: 50
     exclude-type: wireguard    
 
   # Надёжный российский прокси
@@ -200,7 +200,7 @@ $PROVIDERS_CHAIN_LIST
     url: $HEALTH_CHECK_URL
     interval: 300
     expected-status: 204
-    tolerance: 10
+    tolerance: 50
     exclude-type: wireguard        
 
   - name: VIA_RU_FAILOVER
