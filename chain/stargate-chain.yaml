@@ -595,7 +595,7 @@ rules:
   # Правила для конкретных сервисов:
   - RULE-SET,mixed-ai,AI_DEV
   - OR,((RULE-SET,telegram-domain),(RULE-SET,telegram-ips)),TELEGRAM
-  - OR,((RULE-SET,whatsapp-domain),(RULE-SET,whatsapp-ips),WHATSAPP
+  - OR,((RULE-SET,whatsapp-domain),(RULE-SET,whatsapp-ips)),WHATSAPP
   - OR,((RULE-SET,discord_domains),(RULE-SET,discord_voiceips)),SELECTOR
   - OR,((RULE-SET,steam-domain),(RULE-SET,steam-ips)),STEAM
   - RULE-SET,anthropic,ANTHROPIC

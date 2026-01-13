@@ -866,7 +866,7 @@ rules:
 
   # Приложения
   - OR,((RULE-SET,telegram-domain),(RULE-SET,telegram-ips)),Telegram
-  - OR,((RULE-SET,whatsapp-domain),(RULE-SET,whatsapp-ips),WhatsApp
+  - OR,((RULE-SET,whatsapp-domain),(RULE-SET,whatsapp-ips)),WhatsApp
   - OR,((RULE-SET,discord_domains),(RULE-SET,discord_voiceips)),SELECTOR
   - OR,((RULE-SET,steam-domain),(RULE-SET,steam-ips)),Steam
   - RULE-SET,anthropic,Anthropic
