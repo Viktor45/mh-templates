@@ -344,7 +344,7 @@ rule-providers:
     type: http
     behavior: ipcidr
     format: yaml
-    url: https://github.com/OMchik33/custom-rules/blob/main/mihomo/whatsapp-ips.yaml
+    url: https://raw.githubusercontent.com/OMchik33/custom-rules/refs/heads/main/mihomo/whatsapp-ips.yaml
     path: ./rule-sets/whatsapp-ips.yaml
     interval: 86400    
 
