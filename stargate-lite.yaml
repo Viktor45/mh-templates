@@ -138,7 +138,7 @@ $PROVIDERS_LIST
       - RU_MANUAL      
       - DIRECT
     url: $HEALTH_CHECK_URL
-    filter: '(?i)🇷🇺|RU'   # Ищет прокси с флагом 🇷🇺или надписью "RU"
+    filter: "(?i)🇷🇺|RU"   # Ищет прокси с флагом 🇷🇺или надписью "RU"
     interval: 200
 
   - name: RU_FASTEST
@@ -146,7 +146,7 @@ $PROVIDERS_LIST
     use:
 $PROVIDERS_LIST
     url: $HEALTH_CHECK_URL
-    filter: '(?i)🇷🇺|RU'
+    filter: "(?i)🇷🇺|RU"
     interval: 300
     lazy: false
     expected-status: $HEALTH_CHECK_EXPECTED_STATUS
@@ -157,7 +157,7 @@ $PROVIDERS_LIST
     use:
 $PROVIDERS_LIST
     url: $HEALTH_CHECK_URL
-    filter: '(?i)🇷🇺|RU'
+    filter: "(?i)🇷🇺|RU"
     interval: 200
 
   # Объединяет все основные варианты в одном месте
