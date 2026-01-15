@@ -272,6 +272,30 @@ $PROVIDERS_CHAIN_LIST
       - RU_MANUAL
       - DIRECT
 
+  - name: CLOUDFLARE
+    type: select
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Cloudflare.png
+    include-all: false
+    proxies:
+      - VIA_RU_AUTO
+      - AUTO      
+      - MANUAL
+      - RU_AUTO
+      - RU_MANUAL
+      - DIRECT
+
+  - name: DISCORD
+    type: select
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Discord.png
+    include-all: false
+    proxies:
+      - VIA_RU_AUTO
+      - AUTO      
+      - MANUAL
+      - RU_AUTO
+      - RU_MANUAL
+      - DIRECT
+
   - name: STEAM
     type: select
     icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Steam.png
@@ -446,12 +470,36 @@ rule-providers:
     path: ./rule-sets/twitch-domain.mrs
     interval: 86400
 
+  cf-domains:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/cloudflare.mrs
+    path: ./rule-sets/cf-domains.mrs
+    interval: 86400
+
+  cf-ips:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geoip/cloudflare.mrs
+    path: ./rule-sets/cf-ips.mrs
+    interval: 86400
+
   discord_domains:
     type: http
     behavior: domain
     format: mrs
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/discord.mrs
     path: ./rule-sets/discord_domains.mrs
+    interval: 86400
+
+  discord_voiceips:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    url: https://github.com/legiz-ru/mihomo-rule-sets/raw/main/other/discord-voice-ip-list.mrs
+    path: ./rule-sets/discord_voiceips.mrs
     interval: 86400
 
   google_gemini:
@@ -492,14 +540,6 @@ rule-providers:
     format: mrs
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/perplexity.mrs
     path: ./rule-sets/perplexity.mrs
-    interval: 86400
-
-  discord_voiceips:
-    type: http
-    behavior: ipcidr
-    format: mrs
-    url: https://github.com/legiz-ru/mihomo-rule-sets/raw/main/other/discord-voice-ip-list.mrs
-    path: ./rule-sets/discord_voiceips.mrs
     interval: 86400
 
   youtube:
@@ -596,7 +636,7 @@ rules:
   - RULE-SET,mixed-ai,AI_DEV
   - OR,((RULE-SET,telegram-domain),(RULE-SET,telegram-ips)),TELEGRAM
   - OR,((RULE-SET,whatsapp-domain),(RULE-SET,whatsapp-ips)),WHATSAPP
-  - OR,((RULE-SET,discord_domains),(RULE-SET,discord_voiceips)),SELECTOR
+  - OR,((RULE-SET,discord_domains),(RULE-SET,discord_voiceips)),DISCORD
   - OR,((RULE-SET,steam-domain),(RULE-SET,steam-ips)),STEAM
   - RULE-SET,anthropic,ANTHROPIC
   - RULE-SET,perplexity,PERPLEXITY
@@ -605,6 +645,7 @@ rules:
   - RULE-SET,microsoft,MICROSOFT
   - RULE-SET,twitch-domain,TWITCH
   - RULE-SET,youtube,YOUTUBE
+  - OR,((RULE-SET,cf-domains),(RULE-SET,cf-ips)),CLOUDFLARE
   #- RULE-SET,ru-bundle,SELECTOR
 
   # Проверки собственного IP — отправляем через прокси, чтобы не раскрыть реальный адрес
