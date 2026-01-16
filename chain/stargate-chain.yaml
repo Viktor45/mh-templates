@@ -225,10 +225,10 @@ $PROVIDERS_CHAIN_LIST
       - RU_MANUAL
       - DIRECT
 
-  # Глобальный маршрут — почти такой же, но может использоваться в правилах
+  # Глобальный маршрут — может использоваться в правилах, включите если нужно
   - name: GLOBAL
     type: select
-    hidden: false
+    hidden: true
     icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png
     proxies:
       - VIA_RU_AUTO

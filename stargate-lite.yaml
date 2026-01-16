@@ -160,10 +160,11 @@ $PROVIDERS_LIST
     filter: "(?i)🇷🇺|RU"
     interval: 200
 
-  # Объединяет все основные варианты в одном месте
+  # Глобальный маршрут — может использоваться в правилах, включите если нужно
   - name: GLOBAL
     type: select
-    hidden: false
+    hidden: true
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png    
     proxies:
       - AUTO
       - MANUAL
