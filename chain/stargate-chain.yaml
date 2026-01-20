@@ -217,6 +217,7 @@ $PROVIDERS_CHAIN_LIST
   - name: SELECTOR
     type: select
     icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Dark/Proxy.png
+    include-all: true # Иногда требуется
     proxies:
       - VIA_RU_AUTO
       - AUTO      

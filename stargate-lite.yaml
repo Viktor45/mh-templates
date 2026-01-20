@@ -74,6 +74,7 @@ proxy-groups:
   # Основной переключатель: выбирает, как направлять трафик
   - name: SELECTOR
     type: select
+    include-all: true # Иногда требуется
     proxies:
       - AUTO      # Всё само настраивается
       - MANUAL    # Сам выбираю прокси
