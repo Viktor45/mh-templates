@@ -141,7 +141,7 @@ $PROVIDERS_LIST
       - RU_MANUAL
       - DIRECT
     url: $HEALTH_CHECK_URL
-    filter: "(?i)🇷🇺|RU"   # Ищет прокси с флагом 🇷🇺или надписью "RU"
+    filter: "(?i)🇷🇺|RU"   # Ищет прокси с флагом 🇷🇺 или надписью "RU"
     interval: 200
 
   - name: RU_FASTEST
@@ -205,7 +205,7 @@ $PROVIDERS_LIST
   - name: GLOBAL
     type: select
     hidden: true
-    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png    
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png
     proxies:
       - AUTO
       - MANUAL
@@ -285,12 +285,12 @@ $PROVIDERS_LIST
 # === ПРАВИЛА ИЗ ВНЕШНИХ ИСТОЧНИКОВ ===
 # Эти правила подгружаются из интернета и обновляются раз в сутки
 rule-providers:
-  telegram-domain:
+  telegram-domains:
     type: http
     behavior: domain
     format: mrs
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/telegram.mrs
-    path: ./rule-sets/telegram-domain.mrs
+    path: ./rule-sets/telegram-domains.mrs
     interval: 86400
 
   telegram-ips:
@@ -301,12 +301,12 @@ rule-providers:
     path: ./rule-sets/telegram-ips.yaml
     interval: 86400
 
-  whatsapp-domain:
+  whatsapp-domains:
     type: http
     behavior: domain
     format: mrs
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/whatsapp.mrs
-    path: ./rule-sets/whatsapp-domain.mrs
+    path: ./rule-sets/whatsapp-domains.mrs
     interval: 86400
 
   whatsapp-ips:
@@ -377,8 +377,8 @@ rules:
   - AND,((NETWORK,udp),(DST-PORT,443)),QUIC
 
   # Правила для конкретных сервисов
-  - OR,((RULE-SET,telegram-domain),(RULE-SET,telegram-ips)),Telegram
-  - OR,((RULE-SET,whatsapp-domain),(RULE-SET,whatsapp-ips)),WhatsApp
+  - OR,((RULE-SET,telegram-domains),(RULE-SET,telegram-ips)),Telegram
+  - OR,((RULE-SET,whatsapp-domains),(RULE-SET,whatsapp-ips)),WhatsApp
   - RULE-SET,youtube,YouTube
   - OR,((RULE-SET,cf-domains),(RULE-SET,cf-ips)),Cloudflare  
   #- RULE-SET,ru-bundle,SELECTOR

@@ -106,8 +106,8 @@ $PROVIDERS_LIST
     interval: 300
     lazy: false
     expected-status: $HEALTH_CHECK_EXPECTED_STATUS
-    exclude-filter: "(?i)🇷🇺|RU"    
-    tolerance: 50    
+    exclude-filter: "(?i)🇷🇺|RU"
+    tolerance: 50
 
   # Если самый быстрый прокси упал — пробует остальные по очереди
   - name: FAILOVER
@@ -141,7 +141,7 @@ $PROVIDERS_LIST
       - RU_MANUAL
       - DIRECT
     url: $HEALTH_CHECK_URL
-    filter: "(?i)🇷🇺|RU"   # Ищет прокси с флагом 🇷🇺или надписью "RU"
+    filter: "(?i)🇷🇺|RU"   # Ищет прокси с флагом 🇷🇺 или надписью "RU"
     interval: 200
 
   - name: RU_FASTEST
@@ -205,7 +205,7 @@ $PROVIDERS_LIST
   - name: GLOBAL
     type: select
     hidden: true
-    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png    
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png
     proxies:
       - AUTO
       - MANUAL
@@ -302,7 +302,7 @@ $PROVIDERS_LIST
     proxies:
       - RU_AUTO
       - RU_MANUAL
-      - SELECTOR        
+      - SELECTOR
       - AWG_AUTO
       - AWG_MANUAL
       - AUTO
@@ -410,12 +410,12 @@ $PROVIDERS_LIST
 # === ПРАВИЛА ИЗ ВНЕШНИХ ИСТОЧНИКОВ ===
 # Эти правила подгружаются из интернета и обновляются раз в сутки
 rule-providers:
-  telegram-domain:
+  telegram-domains:
     type: http
     behavior: domain
     format: mrs
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/telegram.mrs
-    path: ./rule-sets/telegram-domain.mrs
+    path: ./rule-sets/telegram-domains.mrs
     interval: 86400
 
   telegram-ips:
@@ -426,12 +426,12 @@ rule-providers:
     path: ./rule-sets/telegram-ips.yaml
     interval: 86400
 
-  whatsapp-domain:
+  whatsapp-domains:
     type: http
     behavior: domain
     format: mrs
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/whatsapp.mrs
-    path: ./rule-sets/whatsapp-domain.mrs
+    path: ./rule-sets/whatsapp-domains.mrs
     interval: 86400
 
   whatsapp-ips:
@@ -442,12 +442,12 @@ rule-providers:
     path: ./rule-sets/whatsapp-ips.yaml
     interval: 86400
 
-  steam-domain:
+  steam-domains:
     type: http
     behavior: domain
     format: yaml
     url: https://raw.githubusercontent.com/OMchik33/custom-rules/refs/heads/main/mihomo/gaming-domains.yaml
-    path: ./rule-sets/steam-domain.yaml
+    path: ./rule-sets/steam-domains.yaml
     interval: 86400
 
   steam-ips:
@@ -458,12 +458,12 @@ rule-providers:
     path: ./rule-sets/steam-ips.yaml
     interval: 86400
 
-  twitch-domain:
+  twitch-domains:
     type: http
     behavior: domain
     format: mrs
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/twitch.mrs
-    path: ./rule-sets/twitch-domain.mrs
+    path: ./rule-sets/twitch-domains.mrs
     interval: 86400
 
   cf-domains:
@@ -482,23 +482,23 @@ rule-providers:
     path: ./rule-sets/cf-ips.mrs
     interval: 86400
 
-  discord_domains:
+  discord-domains:
     type: http
     behavior: domain
     format: mrs
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/discord.mrs
-    path: ./rule-sets/discord_domains.mrs
+    path: ./rule-sets/discord-domains.mrs
     interval: 86400
 
-  discord_voiceips:
+  discord-voiceips:
     type: http
     behavior: ipcidr
     format: mrs
     url: https://github.com/legiz-ru/mihomo-rule-sets/raw/main/other/discord-voice-ip-list.mrs
-    path: ./rule-sets/discord_voiceips.mrs
+    path: ./rule-sets/discord-voiceips.mrs
     interval: 86400
 
-  google_gemini:
+  google-gemini:
     type: http
     behavior: domain
     format: mrs
@@ -564,7 +564,7 @@ rule-providers:
 #    interval: 86400
 
   # Список доменов для ИИ и разработки, заданный прямо здесь
-  mixed-ai:
+  misc-ai:
     type: inline
     behavior: classical
     format: text
@@ -630,17 +630,17 @@ rules:
   - AND,((NETWORK,udp),(DST-PORT,443)),QUIC
 
   # Правила для конкретных сервисов
-  - RULE-SET,mixed-ai,AI & Разработка
-  - OR,((RULE-SET,telegram-domain),(RULE-SET,telegram-ips)),Telegram
-  - OR,((RULE-SET,whatsapp-domain),(RULE-SET,whatsapp-ips)),WhatsApp
-  - OR,((RULE-SET,discord_domains),(RULE-SET,discord_voiceips)),Discord
-  - OR,((RULE-SET,steam-domain),(RULE-SET,steam-ips)),Steam
+  - RULE-SET,misc-ai,AI & Разработка
+  - OR,((RULE-SET,telegram-domains),(RULE-SET,telegram-ips)),Telegram
+  - OR,((RULE-SET,whatsapp-domains),(RULE-SET,whatsapp-ips)),WhatsApp
+  - OR,((RULE-SET,discord-domains),(RULE-SET,discord-voiceips)),Discord
+  - OR,((RULE-SET,steam-domains),(RULE-SET,steam-ips)),Steam
   - RULE-SET,anthropic,Anthropic
   - RULE-SET,perplexity,Perplexity
-  - RULE-SET,google_gemini,GoogleGemini
+  - RULE-SET,google-gemini,GoogleGemini
   - RULE-SET,openai,OpenAI
   - RULE-SET,microsoft,Microsoft
-  - RULE-SET,twitch-domain,Twitch
+  - RULE-SET,twitch-domains,Twitch
   - RULE-SET,youtube,YouTube
   - OR,((RULE-SET,cf-domains),(RULE-SET,cf-ips)),Cloudflare  
   #- RULE-SET,ru-bundle,SELECTOR
