@@ -631,16 +631,16 @@ rules:
 
   # Правила для конкретных сервисов
   - RULE-SET,mixed-ai,AI & Разработка
-  - OR,((RULE-SET,telegram-domain),(RULE-SET,telegram-ips)),Telegram
-  - OR,((RULE-SET,whatsapp-domain),(RULE-SET,whatsapp-ips)),WhatsApp
+  - OR,((RULE-SET,telegram-domains),(RULE-SET,telegram-ips)),Telegram
+  - OR,((RULE-SET,whatsapp-domains),(RULE-SET,whatsapp-ips)),WhatsApp
   - OR,((RULE-SET,discord-domains),(RULE-SET,discord-voiceips)),Discord
-  - OR,((RULE-SET,steam-domain),(RULE-SET,steam-ips)),Steam
+  - OR,((RULE-SET,steam-domains),(RULE-SET,steam-ips)),Steam
   - RULE-SET,anthropic,Anthropic
   - RULE-SET,perplexity,Perplexity
   - RULE-SET,google-gemini,GoogleGemini
   - RULE-SET,openai,OpenAI
   - RULE-SET,microsoft,Microsoft
-  - RULE-SET,twitch-domain,Twitch
+  - RULE-SET,twitch-domains,Twitch
   - RULE-SET,youtube,YouTube
   - OR,((RULE-SET,cf-domains),(RULE-SET,cf-ips)),Cloudflare  
   #- RULE-SET,ru-bundle,SELECTOR
