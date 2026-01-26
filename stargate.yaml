@@ -220,7 +220,7 @@ $PROVIDERS_LIST
   - name: GLOBAL
     type: select
     hidden: true
-    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png    
+    icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Global.png
     proxies:
       - AUTO
       - MANUAL
@@ -673,12 +673,12 @@ $PROVIDERS_LIST
 # === ВНЕШНИЕ НАБОРЫ ПРАВИЛ ===
 # Эти правила скачиваются из интернета и обновляются автоматически
 rule-providers:
-  telegram-domain:
+  telegram-domains:
     type: http
     behavior: domain
     format: mrs
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/telegram.mrs
-    path: ./rule-sets/telegram-domain.mrs
+    path: ./rule-sets/telegram-domains.mrs
     interval: 86400
 
   telegram-ips:
@@ -689,12 +689,12 @@ rule-providers:
     path: ./rule-sets/telegram-ips.yaml
     interval: 86400
 
-  whatsapp-domain:
+  whatsapp-domains:
     type: http
     behavior: domain
     format: mrs
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/whatsapp.mrs
-    path: ./rule-sets/whatsapp-domain.mrs
+    path: ./rule-sets/whatsapp-domains.mrs
     interval: 86400
 
   whatsapp-ips:
@@ -705,12 +705,12 @@ rule-providers:
     path: ./rule-sets/whatsapp-ips.yaml
     interval: 86400
 
-  steam-domain:
+  steam-domains:
     type: http
     behavior: domain
     format: yaml
     url: https://raw.githubusercontent.com/OMchik33/custom-rules/refs/heads/main/mihomo/gaming-domains.yaml
-    path: ./rule-sets/steam-domain.yaml
+    path: ./rule-sets/steam-domains.yaml
     interval: 86400
 
   steam-ips:
@@ -721,12 +721,12 @@ rule-providers:
     path: ./rule-sets/steam-ips.yaml
     interval: 86400
 
-  twitch-domain:
+  twitch-domains:
     type: http
     behavior: domain
     format: mrs
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/twitch.mrs
-    path: ./rule-sets/twitch-domain.mrs
+    path: ./rule-sets/twitch-domains.mrs
     interval: 86400
 
 #  ru-app-list:
@@ -737,23 +737,23 @@ rule-providers:
 #    path: ./rule-sets/ru-app-list.yaml
 #    interval: 86400
 
-  discord_domains:
+  discord-domains:
     type: http
     behavior: domain
     format: mrs
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/discord.mrs
-    path: ./rule-sets/discord_domains.mrs
+    path: ./rule-sets/discord-domains.mrs
     interval: 86400
 
-  discord_voiceips:
+  discord-voiceips:
     type: http
     behavior: ipcidr
     format: mrs
     url: https://github.com/legiz-ru/mihomo-rule-sets/raw/main/other/discord-voice-ip-list.mrs
-    path: ./rule-sets/discord_voiceips.mrs
+    path: ./rule-sets/discord-voiceips.mrs
     interval: 86400
 
-  google_gemini:
+  google-gemini:
     type: http
     behavior: domain
     format: mrs
@@ -801,7 +801,7 @@ rule-providers:
     path: ./rule-sets/youtube.mrs
     interval: 86400
 
-  refilter_noech:
+  refilter-noech:
     type: http
     behavior: domain
     format: mrs
@@ -809,7 +809,7 @@ rule-providers:
     path: ./rule-sets/refilter-noech.mrs
     interval: 86400
 
-  refilter_ech:
+  refilter-ech:
     type: http
     behavior: domain
     format: mrs
@@ -817,7 +817,7 @@ rule-providers:
     path: ./rule-sets/refilter-ech.mrs
     interval: 86400
 
-  refilter_ipsum:
+  refilter-ipsum:
     type: http
     behavior: ipcidr
     format: mrs
@@ -970,16 +970,16 @@ rules:
   - GEOIP,ru,Ru-Traffic
 
   # Приложения
-  - OR,((RULE-SET,telegram-domain),(RULE-SET,telegram-ips)),Telegram
-  - OR,((RULE-SET,whatsapp-domain),(RULE-SET,whatsapp-ips)),WhatsApp
-  - OR,((RULE-SET,discord_domains),(RULE-SET,discord_voiceips)),Discord
-  - OR,((RULE-SET,steam-domain),(RULE-SET,steam-ips)),Steam
+  - OR,((RULE-SET,telegram-domains),(RULE-SET,telegram-ips)),Telegram
+  - OR,((RULE-SET,whatsapp-domains),(RULE-SET,whatsapp-ips)),WhatsApp
+  - OR,((RULE-SET,discord-domains),(RULE-SET,discord-voiceips)),Discord
+  - OR,((RULE-SET,steam-domains),(RULE-SET,steam-ips)),Steam
   - RULE-SET,anthropic,Anthropic
   - RULE-SET,perplexity,Perplexity
-  - RULE-SET,google_gemini,GoogleGemini
+  - RULE-SET,google-gemini,GoogleGemini
   - RULE-SET,openai,OpenAI
   - RULE-SET,microsoft,Microsoft
-  - RULE-SET,twitch-domain,Twitch
+  - RULE-SET,twitch-domains,Twitch
   - RULE-SET,youtube,YouTube
 
   # CDN и облака (по ZKEEN GEOIP)
@@ -992,9 +992,9 @@ rules:
 
   # Правила для обхода блокировок с ECH
   - DOMAIN,cloudflare-ech.com,SELECTOR
-  - RULE-SET,refilter_ech,DIRECT
-  - RULE-SET,refilter_noech,ECH-Refilter
-  - RULE-SET,refilter_ipsum,ECH-Refilter
+  - RULE-SET,refilter-ech,DIRECT
+  - RULE-SET,refilter-noech,ECH-Refilter
+  - RULE-SET,refilter-ipsum,ECH-Refilter
 
   # Облачные провайдеры и хостинги
   - GEOIP,meta,META
