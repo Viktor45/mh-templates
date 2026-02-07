@@ -104,7 +104,7 @@ proxy-groups:
       - AUTO
       - MANUAL
       - AWG_AUTO
-      - AWG_MANUAL      
+      - AWG_MANUAL
       - RU_AUTO
       - RU_MANUAL
       - DIRECT
@@ -297,11 +297,12 @@ $PROVIDERS_LIST
     icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Telegram.png
     include-all: false
     proxies:
+      - SELECTOR
       - VIA_RU_AUTO
       - AUTO
       - MANUAL
       - AWG_AUTO
-      - AWG_MANUAL      
+      - AWG_MANUAL
       - RU_AUTO
       - RU_MANUAL
       - DIRECT
@@ -311,11 +312,12 @@ $PROVIDERS_LIST
     icon: https://github.com/OMchik33/Whatsapp-icon/blob/master/icons/whatsapp_194x194.png?raw=true
     include-all: false
     proxies:
+      - SELECTOR    
       - VIA_RU_AUTO
       - AUTO
       - MANUAL
       - AWG_AUTO
-      - AWG_MANUAL      
+      - AWG_MANUAL
       - RU_AUTO
       - RU_MANUAL
       - DIRECT
@@ -325,11 +327,12 @@ $PROVIDERS_LIST
     icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Cloudflare.png
     include-all: false
     proxies:
+      - SELECTOR
       - VIA_RU_AUTO
       - AUTO
       - MANUAL
       - AWG_AUTO
-      - AWG_MANUAL      
+      - AWG_MANUAL
       - RU_AUTO
       - RU_MANUAL
       - DIRECT
@@ -339,11 +342,12 @@ $PROVIDERS_LIST
     icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Discord.png
     include-all: false
     proxies:
+      - SELECTOR
       - VIA_RU_AUTO
       - AUTO
       - MANUAL
       - AWG_AUTO
-      - AWG_MANUAL      
+      - AWG_MANUAL
       - RU_AUTO
       - RU_MANUAL
       - DIRECT
@@ -353,11 +357,12 @@ $PROVIDERS_LIST
     icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Steam.png
     include-all: false
     proxies:
+      - SELECTOR
       - VIA_RU_AUTO
       - AUTO
       - MANUAL
       - AWG_AUTO
-      - AWG_MANUAL      
+      - AWG_MANUAL
       - RU_AUTO
       - RU_MANUAL
       - DIRECT
@@ -374,7 +379,8 @@ $PROVIDERS_LIST
       - AWG_AUTO
       - AWG_FASTEST
       - AWG_FAILOVER
-      - AWG_MANUAL     
+      - AWG_MANUAL
+      - SELECTOR
       - AUTO
       - FASTEST
       - FAILOVER 
@@ -389,11 +395,12 @@ $PROVIDERS_LIST
     icon: https://img.icons8.com/3d-fluency/94/twitch.png
     include-all: false
     proxies:
+      - SELECTOR
       - VIA_RU_AUTO
       - AUTO
       - MANUAL
       - AWG_AUTO
-      - AWG_MANUAL      
+      - AWG_MANUAL
       - RU_AUTO
       - RU_MANUAL
       - DIRECT
@@ -403,11 +410,12 @@ $PROVIDERS_LIST
     icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Dark/Bot.png
     include-all: false
     proxies:
+      - SELECTOR
       - VIA_RU_AUTO
       - AUTO
       - MANUAL
       - AWG_AUTO
-      - AWG_MANUAL      
+      - AWG_MANUAL
       - RU_AUTO
       - RU_MANUAL
       - DIRECT
@@ -417,11 +425,12 @@ $PROVIDERS_LIST
     icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Dark/Bot.png
     include-all: false
     proxies:
+      - SELECTOR
       - VIA_RU_AUTO
       - AUTO
       - MANUAL
       - AWG_AUTO
-      - AWG_MANUAL      
+      - AWG_MANUAL
       - RU_AUTO
       - RU_MANUAL
       - DIRECT
@@ -431,11 +440,12 @@ $PROVIDERS_LIST
     icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Dark/Bot.png
     include-all: false
     proxies:
+      - SELECTOR
       - VIA_RU_AUTO
       - AUTO
       - MANUAL
       - AWG_AUTO
-      - AWG_MANUAL      
+      - AWG_MANUAL
       - RU_AUTO
       - RU_MANUAL
       - DIRECT
@@ -445,11 +455,12 @@ $PROVIDERS_LIST
     icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Dark/Microsoft.png
     include-all: false
     proxies:
+      - SELECTOR
       - VIA_RU_AUTO
       - AUTO
       - MANUAL
       - AWG_AUTO
-      - AWG_MANUAL      
+      - AWG_MANUAL
       - RU_AUTO
       - RU_MANUAL
       - DIRECT
@@ -459,11 +470,12 @@ $PROVIDERS_LIST
     icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Dark/Bot.png
     include-all: false
     proxies:
+      - SELECTOR
       - VIA_RU_AUTO
       - AUTO
       - MANUAL
       - AWG_AUTO
-      - AWG_MANUAL      
+      - AWG_MANUAL
       - RU_AUTO
       - RU_MANUAL
       - DIRECT
@@ -473,11 +485,12 @@ $PROVIDERS_LIST
     icon: https://cdn.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Dark/Bot.png
     include-all: false
     proxies:
+      - SELECTOR
       - VIA_RU_AUTO
       - AUTO
       - MANUAL
       - AWG_AUTO
-      - AWG_MANUAL      
+      - AWG_MANUAL
       - RU_AUTO
       - RU_MANUAL
       - DIRECT
@@ -516,7 +529,7 @@ rule-providers:
     format: yaml
     url: https://raw.githubusercontent.com/OMchik33/custom-rules/refs/heads/main/mihomo/whatsapp-ips.yaml
     path: ./rule-sets/whatsapp-ips.yaml
-    interval: 86400   
+    interval: 86400
 
   steam-domain:
     type: http
