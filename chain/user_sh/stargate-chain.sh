@@ -16,7 +16,7 @@ PROVIDERS_LIST=""
 add_http_provider() {
     local name="$1"
     local url="$2"
-    # HWID у нас всегда
+      # HWID у нас всегда
     local header="
     header:
       x-hwid:
@@ -47,9 +47,9 @@ add_http_chain_provider() {
     url: \"${url}\"
     interval: ${PROVIDER_INTERVAL} 
     override:
-      dialer-proxy: RU_AUTO         # Сначала идём через RU_AUTO
-      exclude-filter: \"(?i)🇷🇺|RU\" # Исключаем RU чтобы не ходить петлями
-      exclude-type: wireguard       # Исключаем AWG/WARP — они не поддерживают цепочки
+      dialer-proxy: RU_AUTO           # Сначала идём через RU_AUTO
+      exclude-filter: *exclude_ru     # Исключаем RU чтобы не ходить петлями
+      exclude-type: wireguard         # Исключаем AWG/WARP — они не поддерживают цепочки
 "
     PROVIDERS_CHAIN_LIST="${PROVIDERS_CHAIN_LIST}      - ${chain_name}
 "
@@ -62,11 +62,11 @@ PROVIDERS_CHAIN_LIST=""
 while IFS='=' read -r name value; do
   case "$name" in
     SUB[0-9]*)
-      # Экранируем кавычки в URL, чтобы YAML не сломался
+        # Экранируем кавычки в URL, чтобы YAML не сломался
       value_clean=$(printf '%s' "$value" | sed 's/"/\\"/g')
-      # Добавляем обычный провайдер
+        # Добавляем обычный провайдер
       add_http_provider "$name" "$value_clean"
-      # Добавляем цепочку для этого же источника
+        # Добавляем цепочку для этого же источника
       add_http_chain_provider "$name" "$value_clean"
       ;;
   esac
