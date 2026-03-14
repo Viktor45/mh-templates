@@ -860,10 +860,6 @@ rules:
     # ИИ и инструменты разработки — приоритетная маршрутизация
   - RULE-SET,misc-ai,AI & Разработка
 
-    # Российский трафик (по IP-геолокации ZKEEN)
-    #  - RULE-SET,ru-app-list,DIRECT
-  - GEOIP,ru,Ru-Traffic
-
     # Мессенджеры и коммуникационные сервисы
   - OR,((RULE-SET,telegram-domains),(RULE-SET,telegram-ips)),Telegram
   - OR,((RULE-SET,whatsapp-domains),(RULE-SET,whatsapp-ips)),WhatsApp
@@ -905,6 +901,10 @@ rules:
   - GEOIP,oracle,ORACLE
   - GEOIP,ovh,OVH
   - GEOIP,vultr,VULTR
+
+    # Российский трафик (по IP-геолокации ZKEEN)
+    #  - RULE-SET,ru-app-list,DIRECT
+  - GEOIP,ru,Ru-Traffic
 
     # Сайты, заблокированные в РФ или блокирующие РФ (по ZKEEN geosite)
   - GEOSITE,domains,Other-Domains
