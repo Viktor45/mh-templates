@@ -93,14 +93,7 @@ listeners:
   - name: mixed-in                                  # Смешанный прокси (HTTP + SOCKS5)
     type: mixed                                     # Тип: mixed (принимает оба протокола)
     port: $MIXED_PORT                               # Порт для приложений (обычно 1080)
-  - name: tun-in                                    # TUN-интерфейс (системный уровень)
-    type: tun                                       # Тип: tun (виртуальный сетевой интерфейс)
-    stack: $TUN_STACK                               # Стек: system, gvisor, mixed
-    auto-detect-interface: $TUN_AUTO_DETECT_INTERFACE    # Автоопределение сетевого интерфейса
-    auto-route: $TUN_AUTO_ROUTE                     # Автоматическая настройка маршрутов
-    auto-redirect: $TUN_AUTO_REDIRECT               # Перехват трафика без настройки прокси в приложениях
-    inet4-address:
-      - $TUN_INET4_ADDRESS                          # IP-адрес виртуального TUN-интерфейса
+$TUN_IN_AUTOCONFIG                                  # inbound name: tun-in (для автонастройки более производительного варианта tproxy на поддерживаемом оборудовании)
 
 # ============================================================================
 # === ПОДПИСКИ НА ПРОКСИ (PROXY PROVIDERS) ===
