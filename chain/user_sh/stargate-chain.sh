@@ -6,7 +6,7 @@ HEALTH_CHECK_EXPECTED_STATUS="${HEALTH_CHECK_EXPECTED_STATUS:-204 }"
 PROVIDER_INTERVAL="${PROVIDER_INTERVAL:-3600 }" 
 
 # Перепишем оригинальные переменные подписок для использования в stargate-chain.yaml
-# на свои, чтобы не зависеть от оригинала, если там чтото поменялось внезапно
+# на свои, чтобы не зависеть от оригинала, если там что-то поменялось внезапно
 # что мы не отследили оперативно
 
 PROVIDERS_BLOCK=""
@@ -49,7 +49,7 @@ add_http_chain_provider() {
     override:
       dialer-proxy: RU_AUTO           # Сначала идём через RU_AUTO
       exclude-filter: *exclude_ru     # Исключаем RU чтобы не ходить петлями
-      exclude-type: wireguard         # Исключаем AWG/WARP — они не поддерживают цепочки
+      exclude-type: *exclude_wg       # WG исключен
 "
     PROVIDERS_CHAIN_LIST="${PROVIDERS_CHAIN_LIST}      - ${chain_name}
 "

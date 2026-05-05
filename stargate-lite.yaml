@@ -152,9 +152,9 @@ exclude_ru: &exclude_ru "(?i)🇷🇺|RU"
 # Используется в группах для российского трафика
 filter_ru: &filter_ru "(?i)🇷🇺|RU"
 
-# Регулярное выражение для исключения не-AWG протоколов
-# Оставляет только WireGuard/AmneziaWG прокси
+# Регулярные выражения для исключения протоколов
 exclude_awg: &exclude_awg "ss|shadowsocks|trojan|hysteria|hysteria2|tuic|socks5|http|vless|vmess"
+exclude_wg: &exclude_wg "wireguard"
 
 # ============================================================================
 # === СПИСКИ ПРОКСИ-ГРУПП (ANCHORS) ===
@@ -273,6 +273,7 @@ proxy-groups:
     type: url-test    # Тестирование скорости
     use: *providers_list    # Использовать провайдеры
     exclude-filter: *exclude_ru    # Исключить российские серверы
+    exclude-type: *exclude_wg    # WG отдельно в AWG
     <<: *url_test    # Параметры тестирования
 
     # FAILOVER — резервный прокси при отказе основного
@@ -280,6 +281,7 @@ proxy-groups:
     type: fallback    # Переключение при отказе
     use: *providers_list    # Использовать провайдеры
     exclude-filter: *exclude_ru    # Исключить российские серверы
+    exclude-type: *exclude_wg    # WG отдельно в AWG
     <<: *health_check    # Параметры проверки
 
     # MANUAL — ручной выбор иностранного прокси
@@ -301,7 +303,6 @@ proxy-groups:
       - RU_FAILOVER
       - RU_MANUAL
       - DIRECT
-    filter: *filter_ru    # Только российские серверы
     <<: *health_check    # Параметры проверки
 
     # RU_MANUAL — ручной выбор российского прокси
@@ -315,6 +316,7 @@ proxy-groups:
     type: url-test    # Тестирование скорости
     use: *providers_list    # Использовать провайдеры
     filter: *filter_ru    # Только российские серверы
+    exclude-type: *exclude_wg    # WG отдельно в AWG
     <<: *url_test    # Параметры тестирования
 
     # RU_FAILOVER — резервный российский прокси
@@ -322,6 +324,7 @@ proxy-groups:
     type: fallback    # Переключение при отказе
     use: *providers_list    # Использовать провайдеры
     filter: *filter_ru    # Только российские серверы
+    exclude-type: *exclude_wg    # WG отдельно в AWG
     <<: *health_check    # Параметры проверки
 
     # --------------------------------------------------------------------------
@@ -337,7 +340,6 @@ proxy-groups:
       - AWG_FAILOVER
       - AWG_MANUAL
       - DIRECT
-    exclude-type: *exclude_awg    # Только AWG-протоколы
     <<: *health_check    # Параметры проверки
 
     # AWG_MANUAL — ручной выбор AWG-прокси

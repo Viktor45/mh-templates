@@ -107,11 +107,6 @@ url_test: &url_test
   expected-status: $HEALTH_CHECK_EXPECTED_STATUS    # Ожидаемый HTTP-статус
   tolerance: 50    # Допустимая разница задержки (мс)
 
-# Специальная конфигурация для AWG-прокси с уменьшенной толерантностью
-url_test_awg: &url_test_awg
-  <<: *url_test    # Наследовать параметры url_test
-  tolerance: 30    # Более строгий выбор (30 мс)
-
 # ============================================================================
 # === СПИСКИ ПРОВАЙДЕРОВ И ФИЛЬТРЫ (ANCHORS) ===
 # ============================================================================
@@ -125,14 +120,6 @@ $PROVIDERS_LIST
 # Используется в группах для иностранного трафика
 exclude_ru: &exclude_ru '(?i)🇷🇺|RU'
 
-# Регулярное выражение для фильтрации только российских прокси
-# Используется в группах для российского трафика
-filter_ru: &filter_ru '(?i)🇷🇺|RU'
-
-# Регулярное выражение для исключения не-AWG протоколов
-# Оставляет только WireGuard/AmneziaWG прокси
-exclude_awg: &exclude_awg 'ss|shadowsocks|trojan|hysteria|hysteria2|tuic|socks5|http|vless|vmess'
-
 # ============================================================================
 # === СПИСКИ ПРОКСИ-ГРУПП (ANCHORS) ===
 # ============================================================================
@@ -144,31 +131,6 @@ proxy_list_all: &proxy_list_all
   - AUTO
   - MANUAL
   - DIRECT
-
-# ============================================================================
-# === БАЗОВЫЕ ШАБЛОНЫ ПРАВИЛ (RULE PROVIDER BASES) ===
-# ============================================================================
-
-# Базовый шаблон для всех HTTP-провайдеров правил
-rule_provider_base: &rule_provider_base
-  type: http
-  interval: 86400
-
-# Комбинации behavior + format для разных типов правил
-rule_behavior_domain_mrs: &rule_behavior_domain_mrs
-  <<: *rule_provider_base    # Наследовать базовые параметры
-  behavior: domain
-  format: mrs
-
-rule_behavior_ipcidr_mrs: &rule_behavior_ipcidr_mrs
-  <<: *rule_provider_base    # Наследовать базовые параметры
-  behavior: ipcidr
-  format: mrs
-
-rule_behavior_ipcidr_yaml: &rule_behavior_ipcidr_yaml
-  <<: *rule_provider_base    # Наследовать базовые параметры
-  behavior: ipcidr
-  format: yaml
 
 # ============================================================================
 # === ГРУППЫ ПРОКСИ (PROXY GROUPS) ===

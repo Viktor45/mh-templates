@@ -164,7 +164,6 @@ while read -r CODE; do
       - ${CODE}_FAILOVER
       - ${CODE}_MANUAL
       - DIRECT
-    filter: \"${FILTER_PATTERN}\"    # ${FILTER_COMMENT}
     <<: *health_check    # Параметры проверки
 
     # ${CODE}_MANUAL — ручной выбор прокси (${COUNTRY_NAME})
@@ -178,6 +177,7 @@ while read -r CODE; do
     type: url-test    # Тестирование скорости
     use: *providers_list    # Использовать провайдеры
     filter: \"${FILTER_PATTERN}\"    # ${FILTER_COMMENT}
+    exclude-type: *exclude_wg    # WG отдельно в AWG
     <<: *url_test    # Параметры тестирования
 
     # ${CODE}_FAILOVER — резервный прокси (${COUNTRY_NAME})
@@ -185,6 +185,7 @@ while read -r CODE; do
     type: fallback    # Переключение при отказе
     use: *providers_list    # Использовать провайдеры
     filter: \"${FILTER_PATTERN}\"    # ${FILTER_COMMENT}
+    exclude-type: *exclude_wg    # WG отдельно в AWG
     <<: *health_check    # Параметры проверки
 "
 
