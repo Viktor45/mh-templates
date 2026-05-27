@@ -28,7 +28,17 @@ log-level: $LOG_LEVEL
 # Делать задержки более естественными (чтобы не выдавать автоматизацию)
 # Улучшает точность тестирования скорости прокси-серверов
 # Рекомендуется держать включённым для стабильной работы
-unified-delay: true
+unified-delay: $UNIFIED_DELAY
+
+# Одновременные TCP-соединения, которые будут использовать все IP-адреса,
+#  разрешенные DNS для соединений, используя первое успешное соединение.
+tcp-concurrent: $TCP_CONCURRENT
+
+# Максимальное время бездействия TCP Keep Alive
+keep-alive-idle: $KEEP_ALIVE_IDLE
+
+# Интервал отправки пакетов TCP Keep Alive в секундах
+keep-alive-interval: $KEEP_ALIVE_INTERVAL
 
 # Адрес и порт для управления через веб-интерфейс (например: 0.0.0.0:9090)
 # 0.0.0.0 — слушать все сетевые интерфейсы (доступ из сети)
@@ -48,7 +58,7 @@ external-ui-url: $EXTERNAL_UI_URL
 secret: $UI_SECRET
 
 profile:
-  store-selected: true # Сохранение выбора API для групп политик (селекторы в веб-панели) для использования при следующем запуске
+  store-selected: $STORE_SELECTED # Сохранение выбора API для групп политик (селекторы в веб-панели) для использования при следующем запуске
 
 # ============================================================================
 # === DNS НАСТРОЙКИ ===
@@ -59,6 +69,12 @@ profile:
 dns:
   enable: $DNS_ENABLE    # Включить собственный DNS-резолвер
   use-system-hosts: $DNS_USE_SYSTEM_HOSTS    # Использовать системный файл hosts
+  listen: $DNS_LISTEN                        # DNS-сервис
+  cache-algorithm: $DNS_CACHE_ALGORITHM      # Алгоритм кеширования
+  prefer-h3: $DNS_PREFER_H3                  # Предпочитать использование http/3 для DOH
+  enhanced-mode: $DNS_ENHANCED_MODE          # Режим обработки DNS
+  fake-ip-range: $DNS_FAKE_IP_RANGE          # Настройка диапазона IP для режима fakeip
+  fake-ip-ttl: $DNS_FAKE_IP_TTL              # TTL, возвращаемый запросами fakeip
   nameserver:
     - system    # Использовать системный DNS (от роутера/провайдера)
 
