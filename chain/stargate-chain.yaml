@@ -98,6 +98,20 @@ dns:
   enhanced-mode: $DNS_ENHANCED_MODE          # Режим обработки DNS
   fake-ip-range: $DNS_FAKE_IP_RANGE          # Настройка диапазона IP для режима fakeip
   fake-ip-ttl: $DNS_FAKE_IP_TTL              # TTL, возвращаемый запросами fakeip
+  fake-ip-filter:                            # Исключить из fake-ip ресурсы lan/captive/time/stun
+    - +.lan
+    - +.local
+    - +.localhost
+    - +.msftconnecttest.com
+    - +.msftncsi.com
+    - dns.msftnsci.com
+    - captive.apple.com
+    - connectivitycheck.gstatic.com
+    - time.windows.com
+    - time.apple.com
+    - +.ntp.org
+    - +.stun.*.*
+    - +.stun.*.*.*
   nameserver:
     - system                                        # Использовать системный DNS (от роутера/провайдера)
 
@@ -705,16 +719,24 @@ rule-providers:
 rules:
     # Локальная сеть — всегда напрямую (без прокси)
     # Эти правила имеют высший приоритет для безопасности и производительности
-  - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve    # Частная сеть Class A, RFC1918
-  - IP-CIDR,100.64.0.0/10,DIRECT,no-resolve   # Сеть оператора RFC6598
-  - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve    # Loopback (localhost), RFC1700
+  - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve        # Частная сеть Class A, RFC1918
+  - IP-CIDR,100.64.0.0/10,DIRECT,no-resolve     # Сеть оператора RFC6598
+  - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve       # Loopback (localhost), RFC1700
   - IP-CIDR,169.254.0.0/16,DIRECT,no-resolve    # Link local, RFC3330
-  - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve    # Частная сеть Class B, RFC1918
+  - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve     # Частная сеть Class B, RFC1918
+  - IP-CIDR,192.0.0.0/24,DIRECT,no-resolve      # Reserved, RFC3330
+  - IP-CIDR,192.0.2.0/24,DIRECT,no-resolve      # Testnet, RFC3330
   - IP-CIDR,192.88.99.0/24,DIRECT,no-resolve    # Anycast 6to4, RFC3068
   - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve    # Частная сеть Class C, RFC1918
-  - IP-CIDR,224.0.0.0/4,DIRECT,no-resolve    # Multicast, RFC3171
-  - DOMAIN-SUFFIX,local,DIRECT    # Локальный префикс
-  - DOMAIN-SUFFIX,lan,DIRECT    # Локальный префикс
+  - IP-CIDR,198.18.0.0/15,DIRECT,no-resolve     # Benchmark, RFC3330
+  - IP-CIDR,198.51.100.0/24,DIRECT,no-resolve   # Testnet, RFC5735
+  - IP-CIDR,203.0.113.0/24,DIRECT,no-resolve    # Testnet, RFC5735
+  - IP-CIDR,224.0.0.0/4,DIRECT,no-resolve       # Multicast, RFC3171
+  - DOMAIN-SUFFIX,home.arpa,DIRECT              # Локальный префикс RFC8375
+  - DOMAIN-SUFFIX,internal,DIRECT               # Локальный префикс
+  - DOMAIN-SUFFIX,localdomain,DIRECT            # Локальный префикс
+  - DOMAIN-SUFFIX,local,DIRECT                  # Локальный префикс
+  - DOMAIN-SUFFIX,lan,DIRECT                    # Локальный префикс
   
     # QUIC-трафик (UDP/443) — специальная обработка
   - AND,((NETWORK,udp),(DST-PORT,443)),QUIC
