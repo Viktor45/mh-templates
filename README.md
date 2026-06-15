@@ -279,6 +279,24 @@ SG_COUNTRIES="US,NL,DE,GB,FR,JP,SG"
 - `XX_FASTEST` — самый быстрый прокси страны (url-test)
 - `XX_FAILOVER` — резервный прокси страны (fallback)
 
+Чтобы включить или выключить (включено по умолчанию), отображение `XX_FASTEST` и `XX_FAILOVER` для генерируемых стран,
+в целях экономии памяти и ресурсов установите переменным окружения `SG_FASTEST` и `SG_FAILOVER` значение `true` или `false`.
+
+| Переменная    | Значение | результат                   |
+|---------------|----------|-----------------------------|
+| `SG_FASTEST`  | `true`   | Поиск быстрого - включен    |
+| `SG_FASTEST`  | `false`  | Поиск быстрого - выключен   |
+| `SG_FAILOVER` | `true`   | Поиск доступного - включен  |
+| `SG_FAILOVER` | `false`  | Поиск доступного - выключен |
+
+```bash
+# Выключить поиск быстрого по каждой стране
+/container envs add list=MIHOMO key=SG_FASTEST value="false"
+
+# Выключить поиск доступного по каждой стране
+/container envs add list=MIHOMO key=SG_FAILOVER value="false"
+```
+
 **Пример для страны US (США 🇺🇸):**
 ```
 US_AUTO     → автоматически выбирает лучший US прокси
@@ -532,6 +550,8 @@ SG_COUNTRIES="JP,SG,KR,IN"
 | `PROVIDERS_CHAIN_LIST`  | Список цепочечных провайдеров (только для Chain шаблона)                      |
 | `SG_COUNTRIES`          | Список стран для шаблона Area (через запятую)                                 |
 | `SG_CODE`               | Режим фильтрации: `false` = только флаг (по-умолчанию), `true` = флаг + код   |
+| `SG_FASTEST`            | Выполнять поиск быстрого по каждой стране (только для Area шаблона)           |
+| `SG_FAILOVER`           | Выполнять поиск доступного по каждой стране (только для Area шаблона)         | 
 | `AREA_GROUPS_BLOCK`     | Блок групп по странам (генерируется stargate-area.sh)                         |
 | `AREA_GROUPS_LIST`      | Список групп по странам для proxy_list_all (генерируется stargate-area.sh)    |
 | `AREA_SELECTOR_PROXIES` | Список групп по странам для SELECTOR (генерируется stargate-area.sh)          |
