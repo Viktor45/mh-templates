@@ -150,7 +150,9 @@ $PROVIDERS_BLOCK
 # Проверяет доступность прокси-сервера по указанному URL
 health_check: &health_check
   url: $HEALTH_CHECK_URL    # URL для проверки доступности прокси
-  interval: 200    # Интервал проверки в секундах
+  interval: 100    # Интервал проверки в секундах
+  timeout: 4000    # Таймаут ожидания ответа в миллисекундах
+  max-failed-times: 3    # Количество неудачных попыток до отметки "неисправен"
   expected-status: $HEALTH_CHECK_EXPECTED_STATUS    # Ожидаемый HTTP-статус ответа
 
 # Конфигурация URL-тестирования для выбора fastest-прокси
@@ -158,7 +160,9 @@ health_check: &health_check
 # Измеряет задержку до указанного URL для каждого прокси
 url_test: &url_test
   url: $HEALTH_CHECK_URL    # URL для измерения задержки
-  interval: 300    # Интервал тестирования в секундах
+  interval: 200    # Интервал тестирования в секундах
+  timeout: 4000    # Таймаут ожидания ответа в миллисекундах
+  max-failed-times: 3    # Количество неудачных попыток до отметки "неисправен"
   lazy: false    # Тестировать сразу при запуске
   expected-status: $HEALTH_CHECK_EXPECTED_STATUS    # Ожидаемый HTTP-статус
   tolerance: 50    # Допустимая разница задержки (мс)
