@@ -73,17 +73,17 @@ profile:
 # Позволяет корректно маршрутизировать трафик даже при подключении по IP-адресу
 # Критически важно для работы правил на основе доменных имён
 sniffer:
-  enable: true                                      # Включить сниффер
-  parse-pure-ip: true                               # Анализировать IP-адреса без домена
-  force-dns-mapping: true                           # Принудительно использовать DNS-маппинг
-  sniff:                                            # Настройки для различных протоколов
+  enable: true                                # Включить сниффер
+  parse-pure-ip: true                         # Анализировать IP-адреса без домена
+  force-dns-mapping: true                     # Принудительно использовать DNS-маппинг
+  sniff:                                      # Настройки для различных протоколов
     HTTP:
-      ports: [80, 8080-8880]                        # Порты для HTTP-трафика
-      override-destination: true                    # Подменять получателя трафика на домен
+      ports: [80, 8080-8880]                  # Порты для HTTP-трафика
+      override-destination: true              # Подменять получателя трафика на домен
     TLS:
-      ports: [443, 8443]                            # Порты для HTTPS/TLS-трафика
+      ports: [443, 8443]                      # Порты для HTTPS/TLS-трафика
     QUIC:
-      ports: [443, 8443]                            # Порты для QUIC-протокола (UDP/443)
+      ports: [443, 8443]                      # Порты для QUIC-протокола (UDP/443)
 
 # ============================================================================
 # === DNS НАСТРОЙКИ ===
@@ -92,8 +92,8 @@ sniffer:
 # Конфигурация DNS-резолвера для преобразования доменов в IP-адреса
 # Отвечает за разрешение доменных имён в сетевые адреса
 dns:
-  enable: $DNS_ENABLE                               # Включить собственный DNS-резолвер
-  use-system-hosts: $DNS_USE_SYSTEM_HOSTS           # Использовать системный файл hosts
+  enable: $DNS_ENABLE                        # Включить собственный DNS-резолвер
+  use-system-hosts: $DNS_USE_SYSTEM_HOSTS    # Использовать системный файл hosts
   listen: $DNS_LISTEN                        # DNS-сервис
   cache-algorithm: $DNS_CACHE_ALGORITHM      # Алгоритм кеширования
   prefer-h3: $DNS_PREFER_H3                  # Предпочитать использование http/3 для DOH
@@ -115,7 +115,7 @@ dns:
     - +.stun.*.*
     - +.stun.*.*.*
   nameserver:
-    - system                                        # Использовать системный DNS (от роутера/провайдера)
+    - system                                  # Использовать системный DNS (от роутера/провайдера)
 
 # ============================================================================
 # === СЛУШАТЕЛИ (LISTENERS) ===
@@ -125,10 +125,10 @@ dns:
 # Mihomo поддерживает множественные слушатели разных типов
 # Каждый слушатель работает независимо и может иметь свои настройки
 listeners:
-  - name: mixed-in                                  # Смешанный прокси (HTTP + SOCKS5)
-    type: mixed                                     # Тип: mixed (принимает оба протокола)
-    port: $MIXED_PORT                               # Порт для приложений (обычно 1080)
-$TUN_IN_AUTOCONFIG                                  # inbound name: tun-in (для автонастройки более производительного варианта tproxy на поддерживаемом оборудовании)
+  - name: mixed-in                            # Смешанный прокси (HTTP + SOCKS5)
+    type: mixed                               # Тип: mixed (принимает оба протокола)
+    port: $MIXED_PORT                         # Порт для приложений (обычно 1080)
+$TUN_IN_AUTOCONFIG                            # inbound name: tun-in (для автонастройки более производительного варианта tproxy на поддерживаемом оборудовании)
 
 # ============================================================================
 # === ПОДПИСКИ НА ПРОКСИ (PROXY PROVIDERS) ===
@@ -206,10 +206,12 @@ proxy_list_all: &proxy_list_all
   - SELECTOR
   - VIA_RU_AUTO
   - AUTO
+  - LOADBALANCE
   - MANUAL
   - AWG_AUTO
   - AWG_MANUAL
   - RU_AUTO
+  - RU_LOADBALANCE
   - RU_MANUAL
   - DIRECT
 
@@ -217,6 +219,7 @@ proxy_list_all: &proxy_list_all
 # Оптимизирован для работы с YouTube через различные типы прокси
 proxy_list_youtube: &proxy_list_youtube
   - RU_AUTO
+  - RU_LOADBALANCE
   - RU_FASTEST
   - RU_FAILOVER
   - RU_MANUAL
@@ -226,6 +229,7 @@ proxy_list_youtube: &proxy_list_youtube
   - AWG_MANUAL
   - SELECTOR
   - AUTO
+  - LOADBALANCE
   - FASTEST
   - FAILOVER
   - MANUAL
@@ -299,10 +303,12 @@ proxy-groups:
     proxies:
       - VIA_RU_AUTO
       - AUTO
+      - LOADBALANCE
       - MANUAL
       - AWG_AUTO
       - AWG_MANUAL
       - RU_AUTO
+      - RU_LOADBALANCE
       - RU_MANUAL
       - DIRECT    
 
@@ -315,7 +321,7 @@ proxy-groups:
     type: url-test                                    # Тестирование скорости
     use: *providers_list                              # Использовать провайдеры
     exclude-filter: *exclude_ru                       # Исключить российские серверы
-    exclude-type: *exclude_wg    # WG отдельно в AWG
+    exclude-type: *exclude_wg                         # WG отдельно в AWG
     <<: *url_test                                     # Параметры тестирования
 
     # FAILOVER — резервный прокси при отказе основного
@@ -323,8 +329,18 @@ proxy-groups:
     type: fallback                                    # Переключение при отказе
     use: *providers_list                              # Использовать провайдеры
     exclude-filter: *exclude_ru                       # Исключить российские серверы
-    exclude-type: *exclude_wg    # WG отдельно в AWG
+    exclude-type: *exclude_wg                         # WG отдельно в AWG
     <<: *health_check                                 # Параметры проверки
+
+    # LOADBALANCE — балансировка по нагрузке
+  - name: LOADBALANCE
+    type: load-balance                                # Балансировка нагрузки
+    strategy: $LOADBALANCE_STRATEGY                   # Стратегия балансировки (round-robin, consistent-hashing, sticky-sessions)
+    use: *providers_list                              # Использовать провайдеры
+    exclude-filter: *exclude_ru                       # Исключить российские серверы
+    exclude-type: *exclude_wg                         # WG отдельно в AWG
+    <<: *health_check                                 # Параметры тестирования
+    hidden: false                                     # Скрыть из интерфейса
 
     # MANUAL — ручной выбор иностранного прокси
   - name: MANUAL
@@ -347,7 +363,7 @@ proxy-groups:
     type: url-test                                    # Тестирование скорости
     use: *providers_list                              # Использовать провайдеры
     filter: *filter_ru                                # Только российские серверы
-    exclude-type: *exclude_wg    # WG отдельно в AWG
+    exclude-type: *exclude_wg                         # WG отдельно в AWG
     <<: *url_test                                     # Параметры тестирования
 
     # RU_FAILOVER — резервный российский прокси
@@ -355,8 +371,18 @@ proxy-groups:
     type: fallback                                    # Переключение при отказе
     use: *providers_list                              # Использовать провайдеры
     filter: *filter_ru                                # Только российские серверы
-    exclude-type: *exclude_wg    # WG отдельно в AWG
+    exclude-type: *exclude_wg                         # WG отдельно в AWG
     <<: *health_check                                 # Параметры проверки
+
+    # RU_LOADBALANCE — балансировка по нагрузке
+  - name: RU_LOADBALANCE
+    type: load-balance                                # Балансировка нагрузки
+    strategy: $LOADBALANCE_STRATEGY                   # Стратегия балансировки (round-robin, consistent-hashing, sticky-sessions)
+    use: *providers_list                              # Использовать провайдеры
+    filter: *filter_ru                                # Только российские серверы
+    exclude-type: *exclude_wg                         # WG отдельно в AWG
+    <<: *health_check                                 # Параметры тестирования
+    hidden: false                                     # Скрыть из интерфейса
 
     # AUTO — полностью автоматический выбор (иностранные)
     # Приоритет: FASTEST → FAILOVER → MANUAL → DIRECT
@@ -400,7 +426,7 @@ proxy-groups:
     type: url-test                                    # Тестирование скорости
     use: *providers_chain_list                        # Использовать chain-провайдеры
     exclude-filter: *exclude_ru                       # Исключить российские серверы на выходе
-    exclude-type: *exclude_wg    # WG отдельно в AWG
+    exclude-type: *exclude_wg                         # WG отдельно в AWG
     <<: *url_test                                     # Параметры тестирования
 
     # VIA_RU_FAILOVER — резервный маршрут через Россию
@@ -408,7 +434,7 @@ proxy-groups:
     type: fallback                                    # Переключение при отказе
     use: *providers_chain_list                        # Использовать chain-провайдеры
     exclude-filter: *exclude_ru                       # Исключить российские серверы на выходе
-    exclude-type: *exclude_wg    # WG отдельно в AWG
+    exclude-type: *exclude_wg                         # WG отдельно в AWG
     <<: *health_check                                 # Параметры проверки
 
     # --------------------------------------------------------------------------

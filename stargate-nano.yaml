@@ -26,6 +26,9 @@ mode: rule
 # info (информация), debug (отладка - максимальная детализация)
 log-level: $LOG_LEVEL
 
+# Включить поддержку IPv6
+ipv6: $IPV6
+
 # Делать задержки более естественными (чтобы не выдавать автоматизацию)
 # Улучшает точность тестирования скорости прокси-серверов
 # Рекомендуется держать включённым для стабильной работы
@@ -124,9 +127,12 @@ $PROVIDERS_BLOCK
 # Используется для fallback-групп (автоматическое переключение при отказе)
 # Проверяет доступность прокси-сервера по указанному URL
 health_check: &health_check
-  url: $HEALTH_CHECK_URL    # URL для проверки доступности прокси
-  interval: 200    # Интервал проверки в секундах
-  expected-status: $HEALTH_CHECK_EXPECTED_STATUS    # Ожидаемый HTTP-статус ответа
+  url: $HEALTH_CHECK_URL                           # URL для проверки доступности прокси
+  interval: $HEALTH_CHECK_INTERVAL                 # Интервал проверки в секундах
+  expected-status: $HEALTH_CHECK_EXPECTED_STATUS   # Ожидаемый HTTP-статус ответа
+  lazy: $HEALTH_CHECK_LAZY                         # Тестировать сразу при запуске
+  timeout: $HEALTH_CHECK_TIMEOUT                   # Таймаут ожидания ответа в секундах
+  enable: $HEALTH_CHECK_ENABLE                     # Включить проверку доступности прокси (true/false)
 
 # Конфигурация URL-тестирования для выбора fastest-прокси
 # Используется для url-test-групп (автоматический выбор по скорости)
@@ -160,6 +166,7 @@ exclude_ru: &exclude_ru '(?i)🇷🇺|RU'
 proxy_list_all: &proxy_list_all
   - SELECTOR
   - AUTO
+  - LOADBALANCE
   - MANUAL
   - DIRECT
 
@@ -174,10 +181,11 @@ proxy-groups:
     # ГЛАВНЫЙ СЕЛЕКТОР — основная точка выбора в веб-интерфейсе
     # --------------------------------------------------------------------------
   - name: SELECTOR
-    type: select    # Ручной выбор пользователем
-    include-all: true    # Включить все доступные прокси
+    type: select                    # Ручной выбор пользователем
+    include-all: true               # Включить все доступные прокси
     proxies:
       - AUTO
+      - LOADBALANCE
       - MANUAL
       - DIRECT
 
@@ -188,33 +196,42 @@ proxy-groups:
     # AUTO — полностью автоматический выбор (иностранные)
     # Приоритет: FASTEST → FAILOVER → MANUAL → DIRECT
   - name: AUTO
-    type: fallback    # Переключение при отказе
+    type: fallback                  # Переключение при отказе
     proxies:
       - FASTEST
       - FAILOVER
       - MANUAL
       - DIRECT
-    <<: *health_check    # Параметры проверки
+    <<: *health_check               # Параметры проверки
 
     # FASTEST — автоматически выбирает самый быстрый прокси по задержке
   - name: FASTEST
-    type: url-test    # Тестирование скорости
-    use: *providers_list    # Использовать провайдеры
-    exclude-filter: *exclude_ru    # Исключить российские серверы
-    <<: *url_test    # Параметры тестирования
+    type: url-test                  # Тестирование скорости
+    use: *providers_list            # Использовать провайдеры
+    exclude-filter: *exclude_ru     # Исключить российские серверы
+    <<: *url_test                   # Параметры тестирования
 
     # FAILOVER — резервный прокси при отказе основного
   - name: FAILOVER
-    type: fallback    # Переключение при отказе
-    use: *providers_list    # Использовать провайдеры
-    exclude-filter: *exclude_ru    # Исключить российские серверы
-    <<: *health_check    # Параметры проверки
+    type: fallback                  # Переключение при отказе
+    use: *providers_list            # Использовать провайдеры
+    exclude-filter: *exclude_ru     # Исключить российские серверы
+    <<: *health_check               # Параметры проверки
+
+    # LOADBALANCE — балансировка по нагрузке
+  - name: LOADBALANCE
+    type: load-balance              # Балансировка нагрузки
+    strategy: $LOADBALANCE_STRATEGY # Стратегия балансировки (round-robin, consistent-hashing, sticky-sessions)
+    use: *providers_list            # Использовать провайдеры
+    exclude-filter: *exclude_ru     # Исключить российские серверы
+    <<: *health_check               # Параметры тестирования
+    hidden: false                   # Скрыть из интерфейса
 
     # MANUAL — ручной выбор иностранного прокси
   - name: MANUAL
-    type: select    # Ручной выбор
-    use: *providers_list    # Использовать провайдеры
-    exclude-filter: *exclude_ru    # Исключить российские серверы
+    type: select                    # Ручной выбор
+    use: *providers_list            # Использовать провайдеры
+    exclude-filter: *exclude_ru     # Исключить российские серверы
 
     # --------------------------------------------------------------------------
 
@@ -224,8 +241,8 @@ proxy-groups:
 
     # GLOBAL — глобальная группа для правил
   - name: GLOBAL
-    type: select    # Ручной выбор
-    proxies: *proxy_list_all    # Список доступных опций
+    type: select                      # Ручной выбор
+    proxies: *proxy_list_all          # Список доступных опций
 
 
 
