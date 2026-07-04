@@ -16,10 +16,11 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
   #   SG_FASTEST="true"  # true = разрешить блоки поиска быстрого
   #   SG_FAILOVER="true" # true = разрешить блоки поиска отказоустойчивого
   # Для каждой страны создаются группы:
-  #   XX_AUTO     — автоматический выбор (FASTEST → FAILOVER → MANUAL → AUTO)
-  #   XX_MANUAL   — ручной выбор прокси страны
-  #   XX_FASTEST  — самый быстрый прокси страны (url-test) [если SG_FASTEST=true]
-  #   XX_FAILOVER — резервный прокси страны (fallback) [если SG_FAILOVER=true]
+  #   XX_AUTO        — автоматический выбор (FASTEST → FAILOVER → MANUAL → AUTO)
+  #   XX_LOADBALANCE — балансировка нагрузки
+  #   XX_MANUAL      — ручной выбор прокси страны
+  #   XX_FASTEST     — самый быстрый прокси страны (url-test) [если SG_FASTEST=true]
+  #   XX_FAILOVER    — резервный прокси страны (fallback) [если SG_FAILOVER=true]
   # ============================================================================
   # SG_CODE — режим фильтрации прокси по стране
   #   false (по умолчанию) — фильтр только по флагу эмодзи (🇺🇸, 🇩🇪 и т.д.)
@@ -28,6 +29,7 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
   SG_CODE="${SG_CODE:-false}"
   SG_FASTEST="${SG_FASTEST:-true}"
   SG_FAILOVER="${SG_FAILOVER:-true}"
+  LOADBALANCE_STRATEGY="${LOADBALANCE_STRATEGY:-consistent-hashing}"
 
   # Карта флагов для кодов стран
   get_flag() {
@@ -132,6 +134,7 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
     # Генерируем AREA_GROUPS_LIST — список групп для proxy_list_all
     # --------------------------------------------------------------------------
     AREA_GROUPS_LIST="${AREA_GROUPS_LIST}  - ${CODE}_AUTO
+  - ${CODE}_LOADBALANCE
   - ${CODE}_MANUAL
 "
 
@@ -139,6 +142,7 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
     # Генерируем AREA_SELECTOR_PROXIES — список для SELECTOR proxies
     # --------------------------------------------------------------------------
     AREA_SELECTOR_PROXIES="${AREA_SELECTOR_PROXIES}      - ${CODE}_AUTO
+      - ${CODE}_LOADBALANCE
       - ${CODE}_MANUAL
 "
 
@@ -181,11 +185,20 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
     proxies:
       ${AUTO_PROXIES_LIST}
     <<: *health_check    # Параметры проверки
+    # ${CODE}_LOADBALANCE — распределение нагрузки (${COUNTRY_NAME})
+  - name: ${CODE}_LOADBALANCE
+    type: load-balance              # Балансировка нагрузки
+    strategy: ${LOADBALANCE_STRATEGY}
+    use: *providers_list
+    filter: \"${FILTER_PATTERN}\"
+    exclude-type: *exclude_wg       # WG отдельно в AWG
+    <<: *health_check               # Параметры тестирования
+    hidden: false                   # Скрыть из интерфейса
     # ${CODE}_MANUAL — ручной выбор прокси (${COUNTRY_NAME})
   - name: ${CODE}_MANUAL
     type: select    # Ручной выбор
     use: *providers_list    # Использовать провайдеры
-    filter: \"${FILTER_PATTERN}\"    # ${FILTER_COMMENT}
+    filter: '${FILTER_PATTERN}'    # ${FILTER_COMMENT}
 "
 
     # Добавляем блок FASTEST, только если он включен
