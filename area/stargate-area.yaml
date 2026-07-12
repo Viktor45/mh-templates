@@ -700,6 +700,7 @@ rule-providers:
       - DOMAIN-SUFFIX,replit.com
       - DOMAIN-SUFFIX,repl.it
       - DOMAIN-SUFFIX,stackoverflow.com
+      - DOMAIN-SUFFIX,ntc.party
       - DOMAIN-SUFFIX,docker.com
       - DOMAIN-SUFFIX,docker.io
       - DOMAIN-SUFFIX,dockerstatic.com
