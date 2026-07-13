@@ -629,7 +629,7 @@ proxy-groups:
   - name: AI & Разработка
     type: select                    # Ручной выбор
     icon: *icon_bot                 # Иконка бота/ИИ
-    include-all: false              # Только указанные прокси
+    include-all: true               # Только указанные прокси
     proxies: *proxy_list_all        # Список доступных опций
 
     # GOOGLE_GEMINI — ИИ-модель Google Gemini
@@ -846,9 +846,9 @@ rule-providers:
     # misc-ai — список доменов для ИИ и инструментов разработки
     # Задан напрямую, так как редко обновляется
   misc-ai:
-    type: inline    # Тип: встроенный (не скачивать)
-    behavior: classical    # Тип правила: классический
-    format: text    # Формат: текстовый список
+    type: inline          # Тип: встроенный (не скачивать)
+    behavior: classical   # Тип правила: классический
+    format: text          # Формат: текстовый список
     payload:
         # xAI (Grok)
       - DOMAIN-SUFFIX,x.ai

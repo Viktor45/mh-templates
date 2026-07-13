@@ -543,11 +543,11 @@ proxy-groups:
     include-all: false                                # Только указанные прокси
     proxies: *proxy_list_all                          # Список доступных опций
 
-    # AI_DEV — искусственный интеллект и инструменты разработки
-  - name: AI_DEV
+    # AI & РАЗРАБОТКА — искусственный интеллект и инструменты разработки
+  - name: AI & Разработка
     type: select                                      # Ручной выбор
     icon: *icon_bot                                   # Иконка бота/ИИ
-    include-all: false                                # Только указанные прокси
+    include-all: true                                 # Только указанные прокси
     proxies: *proxy_list_all                          # Список доступных опций
 
     # GOOGLE_GEMINI — ИИ-модель Google Gemini
@@ -696,9 +696,9 @@ rule-providers:
     # mixed-ai — список доменов для ИИ и инструментов разработки
     # Задан напрямую, так как редко обновляется
   mixed-ai:
-    type: inline                                      # Тип: встроенный (не скачивать)
-    behavior: classical                               # Тип правила: классический
-    format: text                                      # Формат: текстовый список
+    type: inline          # Тип: встроенный (не скачивать)
+    behavior: classical   # Тип правила: классический
+    format: text          # Формат: текстовый список
     payload:
         # xAI (Grok)
       - DOMAIN-SUFFIX,x.ai
@@ -771,7 +771,7 @@ rules:
   - AND,((NETWORK,udp),(DST-PORT,443)),QUIC
   
     # ИИ и инструменты разработки — приоритетная маршрутизация
-  - RULE-SET,mixed-ai,AI_DEV
+  - RULE-SET,mixed-ai,AI & Разработка
   
     # Мессенджеры и коммуникационные сервисы
   - OR,((RULE-SET,telegram-domain),(RULE-SET,telegram-ips)),TELEGRAM
