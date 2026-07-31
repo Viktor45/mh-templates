@@ -680,23 +680,32 @@ rule-providers:
       - DOMAIN-SUFFIX,hf.space
       - DOMAIN-SUFFIX,huggingface.com
       - DOMAIN-KEYWORD,huggingface
-        #  Midjourney и другие ИИ для изображений
+        # Midjourney и другие ИИ для изображений
       - DOMAIN-SUFFIX,midjourney.com
-      - DOMAIN-SUFFIX,cdn.midjourney.com
       - DOMAIN-KEYWORD,midjourney
       - DOMAIN-SUFFIX,stability.ai
       - DOMAIN-SUFFIX,stablediffusionweb.com
       - DOMAIN-SUFFIX,dreamstudio.ai
       - DOMAIN-SUFFIX,runwayml.com
       - DOMAIN-SUFFIX,runway.ml
-        #  Character.AI и другие
+        # Character.AI и другие
       - DOMAIN-SUFFIX,character.ai
-      - DOMAIN-SUFFIX,beta.character.ai
       - DOMAIN-SUFFIX,replicate.com
       - DOMAIN-SUFFIX,cohere.ai
       - DOMAIN-SUFFIX,cohere.com
-        #  Инструменты для программистов
+        # Инструменты для программистов
+      - DOMAIN-SUFFIX,datalore.io
+      - DOMAIN-SUFFIX,intellij.com
+      - DOMAIN-SUFFIX,intellij.net
+      - DOMAIN-SUFFIX,intellij.org
+      - DOMAIN-SUFFIX,jb.gg
+      - DOMAIN-SUFFIX,jetbrains.cloud
       - DOMAIN-SUFFIX,jetbrains.com
+      - DOMAIN-SUFFIX,jetbrains.net
+      - DOMAIN-SUFFIX,jetbrains.space
+      - DOMAIN-SUFFIX,jetbrains.team
+      - DOMAIN-SUFFIX,kotlinlang.org
+      - DOMAIN-SUFFIX,youtrack.cloud
       - DOMAIN-SUFFIX,replit.com
       - DOMAIN-SUFFIX,repl.it
       - DOMAIN-SUFFIX,stackoverflow.com
