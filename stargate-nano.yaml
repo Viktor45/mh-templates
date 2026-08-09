@@ -85,7 +85,7 @@ dns:
     - +.localhost
     - +.msftconnecttest.com
     - +.msftncsi.com
-    - dns.msftnsci.com
+    - dns.msftncsi.com
     - captive.apple.com
     - connectivitycheck.gstatic.com
     - time.windows.com
