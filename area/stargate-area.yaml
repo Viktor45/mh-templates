@@ -716,6 +716,11 @@ rule-providers:
       - DOMAIN-SUFFIX,compose-spec.io
       - DOMAIN-SUFFIX,npmjs.com
       - DOMAIN-SUFFIX,pypi.org
+      - DOMAIN-SUFFIX,openrouter.ai
+      - DOMAIN-SUFFIX,tokenrouter.com
+      - DOMAIN-SUFFIX,b.ai
+      - DOMAIN-SUFFIX,duck.ai
+      - DOMAIN-SUFFIX,z.ai
 
 # ============================================================================
 # === ПРАВИЛА МАРШРУТИЗАЦИИ (RULES) ===
