@@ -15,6 +15,7 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
   #   SG_CODE="false"  # false = фильтр только по FLAG, true = FLAG + CODE
   #   SG_FASTEST="true"  # true = разрешить блоки поиска быстрого
   #   SG_FAILOVER="true" # true = разрешить блоки поиска отказоустойчивого
+  #   SG_LOADBALANCE="true" # true = разрешить блоки поиска балансировки нагрузки
   # Для каждой страны создаются группы:
   #   XX_AUTO        — автоматический выбор (FASTEST → FAILOVER → MANUAL → AUTO)
   #   XX_LOADBALANCE — балансировка нагрузки
@@ -29,6 +30,7 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
   SG_CODE="${SG_CODE:-false}"
   SG_FASTEST="${SG_FASTEST:-true}"
   SG_FAILOVER="${SG_FAILOVER:-true}"
+  SG_LOADBALANCE="${SG_LOADBALANCE:-true}"
   LOADBALANCE_STRATEGY="${LOADBALANCE_STRATEGY:-consistent-hashing}"
 
   # Карта флагов для кодов стран
@@ -133,16 +135,25 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
     # --------------------------------------------------------------------------
     # Генерируем AREA_GROUPS_LIST — список групп для proxy_list_all
     # --------------------------------------------------------------------------
-    AREA_GROUPS_LIST="${AREA_GROUPS_LIST}  - ${CODE}_AUTO
-  - ${CODE}_LOADBALANCE
+    AREA_GROUPS_LIST="${AREA_GROUPS_LIST}
+  - ${CODE}_AUTO"
+    if [ "$SG_LOADBALANCE" = "true" ]; then
+      AREA_GROUPS_LIST="${AREA_GROUPS_LIST}
+  - ${CODE}_LOADBALANCE"
+    fi
+    AUTO_PROXIES_LIST="${AUTO_PROXIES_LIST}
   - ${CODE}_MANUAL
 "
 
     # --------------------------------------------------------------------------
     # Генерируем AREA_SELECTOR_PROXIES — список для SELECTOR proxies
     # --------------------------------------------------------------------------
-    AREA_SELECTOR_PROXIES="${AREA_SELECTOR_PROXIES}      - ${CODE}_AUTO
-      - ${CODE}_LOADBALANCE
+    AREA_SELECTOR_PROXIES="${AREA_SELECTOR_PROXIES}      - ${CODE}_AUTO"
+    if [ "$SG_LOADBALANCE" = "true" ]; then
+      AREA_SELECTOR_PROXIES="${AREA_SELECTOR_PROXIES}
+      - ${CODE}_LOADBALANCE"
+    fi
+    AREA_SELECTOR_PROXIES="${AREA_SELECTOR_PROXIES}
       - ${CODE}_MANUAL
 "
 
@@ -185,6 +196,10 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
     proxies:
       ${AUTO_PROXIES_LIST}
     <<: *health_check    # Параметры проверки
+"
+    # Добавляем блок LOADBALANCE, только если он включен
+    if [ "$SG_LOADBALANCE" = "true" ]; then
+      AREA_GROUPS_BLOCK="${AREA_GROUPS_BLOCK}
     # ${CODE}_LOADBALANCE — распределение нагрузки (${COUNTRY_NAME})
   - name: ${CODE}_LOADBALANCE
     type: load-balance              # Балансировка нагрузки
@@ -194,6 +209,9 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
     exclude-type: *exclude_wg       # WG отдельно в AWG
     <<: *health_check               # Параметры тестирования
     hidden: false                   # Скрыть из интерфейса
+"
+    fi
+      AREA_GROUPS_BLOCK="${AREA_GROUPS_BLOCK}
     # ${CODE}_MANUAL — ручной выбор прокси (${COUNTRY_NAME})
   - name: ${CODE}_MANUAL
     type: select    # Ручной выбор

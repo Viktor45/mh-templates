@@ -2,3 +2,7 @@
 .vscode
 .idea
 .qwen
+.zcode
+entrypoint.sh
+default_config.yaml
+AGENTS.md
