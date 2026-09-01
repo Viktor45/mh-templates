@@ -141,7 +141,7 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
       AREA_GROUPS_LIST="${AREA_GROUPS_LIST}
   - ${CODE}_LOADBALANCE"
     fi
-    AUTO_PROXIES_LIST="${AUTO_PROXIES_LIST}
+    AREA_GROUPS_LIST="${AREA_GROUPS_LIST}
   - ${CODE}_MANUAL
 "
 
@@ -182,8 +182,8 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
       AUTO_PROXIES_LIST="${AUTO_PROXIES_LIST}
       - ${CODE}_FAILOVER"
     fi
+    # если первые два отказали - перейти на основной AUTO, для сохранения связанности
     AUTO_PROXIES_LIST="${AUTO_PROXIES_LIST}
-      - ${CODE}_MANUAL
       - AUTO"
 
     AREA_GROUPS_BLOCK="${AREA_GROUPS_BLOCK}
