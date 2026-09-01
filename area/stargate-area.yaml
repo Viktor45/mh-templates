@@ -150,7 +150,7 @@ $PROVIDERS_BLOCK
 # Проверяет доступность прокси-сервера по указанному URL
 health_check: &health_check
   url: $HEALTH_CHECK_URL                            # URL для проверки доступности прокси
-  interval: 100                                     # Интервал проверки в секундах
+  interval: $HEALTH_CHECK_INTERVAL                                     # Интервал проверки в секундах
   timeout: 4000                                     # Таймаут ожидания ответа в миллисекундах
   max-failed-times: 3                               # Количество неудачных попыток до отметки "неисправен"
   expected-status: $HEALTH_CHECK_EXPECTED_STATUS    # Ожидаемый HTTP-статус ответа
@@ -160,12 +160,12 @@ health_check: &health_check
 # Измеряет задержку до указанного URL для каждого прокси
 url_test: &url_test
   url: $HEALTH_CHECK_URL                            # URL для измерения задержки
-  interval: 200                                     # Интервал тестирования в секундах
+  interval: $HEALTH_CHECK_INTERVAL                                     # Интервал тестирования в секундах
   timeout: 4000                                     # Таймаут ожидания ответа в миллисекундах
   max-failed-times: 3                               # Количество неудачных попыток до отметки "неисправен"
-  lazy: false                                       # Тестировать сразу при запуске
+  lazy: $HEALTH_CHECK_LAZY                                       # Тестировать сразу при запуске
   expected-status: $HEALTH_CHECK_EXPECTED_STATUS    # Ожидаемый HTTP-статус
-  tolerance: 50                                     # Допустимая разница задержки (мс)
+  tolerance: $TOLERANCE                                     # Допустимая разница задержки (мс)
 
 # Специальная конфигурация для AWG-прокси с уменьшенной толерантностью
 url_test_awg: &url_test_awg

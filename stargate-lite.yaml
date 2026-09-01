@@ -159,10 +159,10 @@ health_check: &health_check
 # Измеряет задержку до указанного URL для каждого прокси
 url_test: &url_test
   url: $HEALTH_CHECK_URL    # URL для измерения задержки
-  interval: 300    # Интервал тестирования в секундах
-  lazy: false    # Тестировать сразу при запуске
+  interval: $HEALTH_CHECK_INTERVAL    # Интервал тестирования в секундах
+  lazy: $HEALTH_CHECK_LAZY    # Тестировать сразу при запуске
   expected-status: $HEALTH_CHECK_EXPECTED_STATUS    # Ожидаемый HTTP-статус
-  tolerance: 50    # Допустимая разница задержки (мс)
+  tolerance: $TOLERANCE    # Допустимая разница задержки (мс)
 
 # Специальная конфигурация для AWG-прокси с уменьшенной толерантностью
 url_test_awg: &url_test_awg
