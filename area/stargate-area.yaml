@@ -13,14 +13,14 @@
 # ============================================================================
 
 # Разрешить подключения из локальной сети (например, с других устройств дома)
-# Если true — другие устройства в вашей сети смогут использовать этот прокси
-# Если false — только локальное устройство имеет доступ к прокси-серверу
+# Если true - другие устройства в вашей сети смогут использовать этот прокси
+# Если false - только локальное устройство имеет доступ к прокси-серверу
 allow-lan: true
 
 # Режим работы ядра: определяет логику маршрутизации всего трафика
-# "rule" — трафик распределяется по правилам (рекомендуется для гибкости)
-# "global" — весь трафик идёт через выбранный прокси-сервер
-# "direct" — весь трафик идёт напрямую без использования прокси
+# "rule" - трафик распределяется по правилам (рекомендуется для гибкости)
+# "global" - весь трафик идет через выбранный прокси-сервер
+# "direct" - весь трафик идет напрямую без использования прокси
 mode: rule
 
 # Уровень подробности логирования событий в журнале работы
@@ -33,7 +33,7 @@ ipv6: $IPV6
 
 # Делать задержки более естественными (чтобы не выдавать автоматизацию)
 # Улучшает точность тестирования скорости прокси-серверов
-# Рекомендуется держать включённым для стабильной работы
+# Рекомендуется держать включенным для стабильной работы
 unified-delay: $UNIFIED_DELAY
 
 # Одновременные TCP-соединения, которые будут использовать все IP-адреса,
@@ -47,7 +47,7 @@ keep-alive-idle: $KEEP_ALIVE_IDLE
 keep-alive-interval: $KEEP_ALIVE_INTERVAL
 
 # Адрес и порт для управления через веб-интерфейс (например: 0.0.0.0:9090)
-# 0.0.0.0 — слушать все сетевые интерфейсы (доступ из сети)
+# 0.0.0.0 - слушать все сетевые интерфейсы (доступ из сети)
 external-controller: $EXTERNAL_CONTROLLER_ADDRESS:$UI_PORT
 
 # Путь к папке с веб-интерфейсом на диске (локальная версия UI)
@@ -70,9 +70,9 @@ profile:
 # === АНАЛИЗ ТРАФИКА (SNIFFER) ===
 # ============================================================================
 
-# Функция "подслушивания" трафика для определения доменных имён
+# Функция "подслушивания" трафика для определения доменных имен
 # Позволяет корректно маршрутизировать трафик даже при подключении по IP-адресу
-# Критически важно для работы правил на основе доменных имён
+# Критически важно для работы правил на основе доменных имен
 sniffer:
   enable: true    # Включить сниффер
   parse-pure-ip: true    # Анализировать IP-адреса без домена
@@ -91,7 +91,7 @@ sniffer:
 # ============================================================================
 
 # Конфигурация DNS-резолвера для преобразования доменов в IP-адреса
-# Отвечает за разрешение доменных имён в сетевые адреса
+# Отвечает за разрешение доменных имен в сетевые адреса
 dns:
   enable: $DNS_ENABLE    # Включить собственный DNS-резолвер
   use-system-hosts: $DNS_USE_SYSTEM_HOSTS    # Использовать системный файл hosts
@@ -136,7 +136,7 @@ $TUN_IN_AUTOCONFIG    # inbound name: tun-in (для автонастройки 
 # ============================================================================
 
 # Источники прокси-серверов (подписки)
-# PROVIDERS_BLOCK — автоматически подставляемые подписки из скрипта настройки
+# PROVIDERS_BLOCK - автоматически подставляемые подписки из скрипта настройки
 # Формат подписок должен быть совместим с Mihomo/Meta
 proxy-providers:
 $PROVIDERS_BLOCK
@@ -199,7 +199,7 @@ exclude_wg: &exclude_wg 'wireguard|direct'
 
 # Полный список всех прокси-групп для основного селектора
 # Определяет порядок отображения групп в веб-интерфейсе
-# AREA_GROUPS_BLOCK — динамически генерируемые группы по странам
+# AREA_GROUPS_BLOCK - динамически генерируемые группы по странам
 proxy_list_all: &proxy_list_all
   - SELECTOR
   - AUTO
@@ -282,7 +282,7 @@ rule_behavior_ipcidr_yaml: &rule_behavior_ipcidr_yaml
 # Типы групп: select (ручной), url-test (автоматический по скорости), fallback (резервный)
 proxy-groups:
     # --------------------------------------------------------------------------
-    # ГЛАВНЫЙ СЕЛЕКТОР — основная точка выбора в веб-интерфейсе
+    # ГЛАВНЫЙ СЕЛЕКТОР - основная точка выбора в веб-интерфейсе
     # --------------------------------------------------------------------------
   - name: SELECTOR
     type: select              # Ручной выбор пользователем
@@ -303,7 +303,7 @@ $AREA_SELECTOR_PROXIES
     # БАЗОВЫЕ АВТОМАТИЧЕСКИЕ ГРУППЫ (ИНОСТРАННЫЕ ПРОКСИ)
     # --------------------------------------------------------------------------
 
-    # AUTO — полностью автоматический выбор (иностранные)
+    # AUTO - полностью автоматический выбор (иностранные)
     # Приоритет: FASTEST → FAILOVER → MANUAL → DIRECT
   - name: AUTO
     type: fallback                # Переключение при отказе
@@ -314,7 +314,7 @@ $AREA_SELECTOR_PROXIES
       - DIRECT
     <<: *health_check             # Параметры проверки
 
-    # FASTEST — автоматически выбирает самый быстрый прокси по задержке
+    # FASTEST - автоматически выбирает самый быстрый прокси по задержке
   - name: FASTEST
     type: url-test                # Тестирование скорости
     use: *providers_list          # Использовать провайдеры
@@ -322,7 +322,7 @@ $AREA_SELECTOR_PROXIES
     exclude-type: *exclude_wg     # WG отдельно в AWG
     <<: *url_test                 # Параметры тестирования
 
-    # FAILOVER — резервный прокси при отказе основного
+    # FAILOVER - резервный прокси при отказе основного
   - name: FAILOVER
     type: fallback                # Переключение при отказе
     use: *providers_list          # Использовать провайдеры
@@ -330,7 +330,7 @@ $AREA_SELECTOR_PROXIES
     exclude-type: *exclude_wg     # WG отдельно в AWG
     <<: *health_check             # Параметры проверки
 
-    # LOADBALANCE — балансировка по нагрузке
+    # LOADBALANCE - балансировка по нагрузке
   - name: LOADBALANCE
     type: load-balance              # Балансировка нагрузки
     strategy: $LOADBALANCE_STRATEGY # Стратегия балансировки (round-robin, consistent-hashing, sticky-sessions)
@@ -338,9 +338,9 @@ $AREA_SELECTOR_PROXIES
     exclude-filter: *exclude_ru     # Исключить российские серверы
     exclude-type: *exclude_wg     # WG отдельно в AWG
     <<: *health_check               # Параметры тестирования
-    hidden: false                   # Скрыть из интерфейса
+    hidden: false                   # Показывать в интерфейсе
 
-    # MANUAL — ручной выбор иностранного прокси
+    # MANUAL - ручной выбор иностранного прокси
   - name: MANUAL
     type: select                  # Ручной выбор
     use: *providers_list          # Использовать провайдеры
@@ -350,7 +350,7 @@ $AREA_SELECTOR_PROXIES
     # РОССИЙСКИЕ ПРОКСИ-ГРУППЫ
     # --------------------------------------------------------------------------
 
-    # RU_AUTO — полностью автоматический выбор (российские)
+    # RU_AUTO - полностью автоматический выбор (российские)
     # Приоритет: RU_FASTEST → RU_FAILOVER → RU_MANUAL → DIRECT
   - name: RU_AUTO
     type: fallback                  # Переключение при отказе
@@ -361,13 +361,13 @@ $AREA_SELECTOR_PROXIES
       - DIRECT
     <<: *health_check               # Параметры проверки
 
-    # RU_MANUAL — ручной выбор российского прокси
+    # RU_MANUAL - ручной выбор российского прокси
   - name: RU_MANUAL
     type: select                    # Ручной выбор
     use: *providers_list            # Использовать провайдеры
     filter: *filter_ru              # Только российские серверы
 
-    # RU_FASTEST — самый быстрый российский прокси
+    # RU_FASTEST - самый быстрый российский прокси
   - name: RU_FASTEST
     type: url-test                  # Тестирование скорости
     use: *providers_list            # Использовать провайдеры
@@ -375,7 +375,7 @@ $AREA_SELECTOR_PROXIES
     exclude-type: *exclude_wg       # WG отдельно в AWG
     <<: *url_test                   # Параметры тестирования
 
-    # RU_FAILOVER — резервный российский прокси
+    # RU_FAILOVER - резервный российский прокси
   - name: RU_FAILOVER
     type: fallback                  # Переключение при отказе
     use: *providers_list            # Использовать провайдеры
@@ -383,7 +383,7 @@ $AREA_SELECTOR_PROXIES
     exclude-type: *exclude_wg       # WG отдельно в AWG
     <<: *health_check               # Параметры проверки
 
-    # RU_LOADBALANCE — балансировка по нагрузке
+    # RU_LOADBALANCE - балансировка по нагрузке
   - name: RU_LOADBALANCE
     type: load-balance              # Балансировка нагрузки
     strategy: $LOADBALANCE_STRATEGY # Стратегия балансировки (round-robin, consistent-hashing, sticky-sessions)
@@ -391,13 +391,13 @@ $AREA_SELECTOR_PROXIES
     filter: *filter_ru              # Только российские серверы
     exclude-type: *exclude_wg       # WG отдельно в AWG
     <<: *health_check               # Параметры тестирования
-    hidden: false                   # Скрыть из интерфейса
+    hidden: false                   # Показывать в интерфейсе
 
     # --------------------------------------------------------------------------
     # AMNEZIA/WIREGUARD ГРУППЫ
     # --------------------------------------------------------------------------
 
-    # AWG_AUTO — автоматический выбор AWG-прокси
+    # AWG_AUTO - автоматический выбор AWG-прокси
     # Приоритет: AWG_FASTEST → AWG_FAILOVER → AWG_MANUAL → DIRECT
   - name: AWG_AUTO
     type: fallback                # Переключение при отказе
@@ -408,20 +408,20 @@ $AREA_SELECTOR_PROXIES
       - DIRECT
     <<: *health_check             # Параметры проверки
 
-    # AWG_MANUAL — ручной выбор AWG-прокси
+    # AWG_MANUAL - ручной выбор AWG-прокси
   - name: AWG_MANUAL
     type: select                  # Ручной выбор
     use: *providers_list          # Использовать провайдеры
     exclude-type: *exclude_awg    # Только AWG-протоколы
 
-    # AWG_FASTEST — самый быстрый AWG-прокси
+    # AWG_FASTEST - самый быстрый AWG-прокси
   - name: AWG_FASTEST
     type: url-test                # Тестирование скорости
     use: *providers_list          # Использовать провайдеры
     exclude-type: *exclude_awg    # Только AWG-протоколы
     <<: *url_test_awg             # Параметры тестирования (tolerance: 30)
 
-    # AWG_FAILOVER — резервный AWG-прокси
+    # AWG_FAILOVER - резервный AWG-прокси
   - name: AWG_FAILOVER
     type: fallback                # Переключение при отказе
     use: *providers_list          # Использовать провайдеры
@@ -434,14 +434,14 @@ $AREA_GROUPS_BLOCK
     # СИСТЕМНЫЕ ГРУППЫ
     # --------------------------------------------------------------------------
 
-    # GLOBAL — скрытая глобальная группа для правил
+    # GLOBAL - скрытая глобальная группа для правил
   - name: GLOBAL
     type: select                  # Ручной выбор
     hidden: true                  # Скрыть из интерфейса
     icon: *icon_global            # Иконка группы
     proxies: *proxy_list_all      # Список доступных опций
 
-    # QUIC — обработка QUIC-трафика (UDP/443)
+    # QUIC - обработка QUIC-трафика (UDP/443)
   - name: QUIC
     type: select                  # Ручной выбор
     proxies:
@@ -452,91 +452,91 @@ $AREA_GROUPS_BLOCK
     # ГРУППЫ ПО ПРИЛОЖЕНИЯМ/СЕРВИСАМ
     # --------------------------------------------------------------------------
 
-    # TELEGRAM — мессенджер Telegram
+    # TELEGRAM - мессенджер Telegram
   - name: Telegram
     type: select                  # Ручной выбор
     icon: *icon_telegram          # Иконка Telegram
     include-all: false            # Только указанные прокси
     proxies: *proxy_list_all      # Список доступных опций
 
-    # WHATSAPP — мессенджер WhatsApp
+    # WHATSAPP - мессенджер WhatsApp
   - name: WhatsApp
     type: select                  # Ручной выбор
     icon: *icon_whatsapp          # Иконка WhatsApp
     include-all: false            # Только указанные прокси
     proxies: *proxy_list_all      # Список доступных опций
 
-    # CLOUDFLARE — сервисы Cloudflare (CDN, DNS, защита)
+    # CLOUDFLARE - сервисы Cloudflare (CDN, DNS, защита)
   - name: Cloudflare
     type: select                  # Ручной выбор
     icon: *icon_cloudflare        # Иконка Cloudflare
     include-all: false            # Только указанные прокси
     proxies: *proxy_list_all      # Список доступных опций
 
-    # DISCORD — голосовой/текстовый чат Discord
+    # DISCORD - голосовой/текстовый чат Discord
   - name: Discord
     type: select                  # Ручной выбор
     icon: *icon_discord           # Иконка Discord
     include-all: false            # Только указанные прокси
     proxies: *proxy_list_all      # Список доступных опций
 
-    # STEAM — игровая платформа Steam
+    # STEAM - игровая платформа Steam
   - name: Steam
     type: select                  # Ручной выбор
     icon: *icon_steam             # Иконка Steam
     include-all: false            # Только указанные прокси
     proxies: *proxy_list_all      # Список доступных опций
 
-    # YOUTUBE — видеохостинг YouTube
+    # YOUTUBE - видеохостинг YouTube
   - name: YouTube
     type: select                  # Ручной выбор
     icon: *icon_youtube           # Иконка YouTube
     include-all: false            # Только указанные прокси
     proxies: *proxy_list_youtube  # Специальный список для YouTube
 
-    # TWITCH — стриминговая платформа Twitch
+    # TWITCH - стриминговая платформа Twitch
   - name: Twitch
     type: select                  # Ручной выбор
     icon: *icon_twitch            # Иконка Twitch
     include-all: false            # Только указанные прокси
     proxies: *proxy_list_all      # Список доступных опций
 
-    # AI & РАЗРАБОТКА — искусственный интеллект и инструменты разработки
+    # AI & РАЗРАБОТКА - искусственный интеллект и инструменты разработки
   - name: AI & Разработка
     type: select                  # Ручной выбор
     icon: *icon_bot               # Иконка бота/ИИ
-    include-all: true             # Только указанные прокси
+    include-all: true             # Включить все доступные прокси
     proxies: *proxy_list_all      # Список доступных опций
 
-    # GOOGLE_GEMINI — ИИ-модель Google Gemini
+    # GOOGLE_GEMINI - ИИ-модель Google Gemini
   - name: GoogleGemini
     type: select                  # Ручной выбор
     icon: *icon_bot               # Иконка бота/ИИ
     include-all: false            # Только указанные прокси
     proxies: *proxy_list_all      # Список доступных опций
 
-    # OPENAI — ИИ-модели OpenAI (ChatGPT, API)
+    # OPENAI - ИИ-модели OpenAI (ChatGPT, API)
   - name: OpenAI
     type: select                  # Ручной выбор
     icon: *icon_bot               # Иконка бота/ИИ
     include-all: false            # Только указанные прокси
     proxies: *proxy_list_all      # Список доступных опций
 
-    # MICROSOFT — сервисы Microsoft (Azure, Office, Copilot)
+    # MICROSOFT - сервисы Microsoft (Azure, Office, Copilot)
   - name: Microsoft
     type: select                  # Ручной выбор
     icon: *icon_microsoft         # Иконка Microsoft
     include-all: false            # Только указанные прокси
     proxies: *proxy_list_all      # Список доступных опций
 
-    # ANTHROPIC — ИИ-модели Anthropic (Claude)
+    # ANTHROPIC - ИИ-модели Anthropic (Claude)
   - name: Anthropic
     type: select                  # Ручной выбор
     icon: *icon_bot               # Иконка бота/ИИ
     include-all: false            # Только указанные прокси
     proxies: *proxy_list_all      # Список доступных опций
 
-    # PERPLEXITY — поисковая система с ИИ Perplexity
+    # PERPLEXITY - поисковая система с ИИ Perplexity
   - name: Perplexity
     type: select                  # Ручной выбор
     icon: *icon_bot               # Иконка бота/ИИ
@@ -547,10 +547,10 @@ $AREA_GROUPS_BLOCK
 # === ВНЕШНИЕ НАБОРЫ ПРАВИЛ (RULE PROVIDERS) ===
 # ============================================================================
 
-# Провайдеры правил — загружают списки доменов и IP для маршрутизации
+# Провайдеры правил - загружают списки доменов и IP для маршрутизации
 # Позволяют автоматически обновлять правила без изменения конфигурации
 rule-providers:
-    # Telegram — домены и IP-адреса
+    # Telegram - домены и IP-адреса
   telegram-domains:
     <<: *rule_behavior_domain_mrs
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/telegram.mrs
@@ -561,7 +561,7 @@ rule-providers:
     url: https://raw.githubusercontent.com/OMchik33/custom-rules/refs/heads/main/mihomo/telegram-ips.yaml
     path: ./rule-sets/telegram-ips.yaml
 
-    # WhatsApp — домены и IP-адреса
+    # WhatsApp - домены и IP-адреса
   whatsapp-domains:
     <<: *rule_behavior_domain_mrs
     url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/whatsapp.mrs
@@ -572,7 +572,7 @@ rule-providers:
     url: https://raw.githubusercontent.com/OMchik33/custom-rules/refs/heads/main/mihomo/whatsapp-ips.yaml
     path: ./rule-sets/whatsapp-ips.yaml
 
-    # Steam — игровая платформа (домены и IP)
+    # Steam - игровая платформа (домены и IP)
   steam-domains:
     <<: *rule_behavior_domain_yaml
     url: https://raw.githubusercontent.com/OMchik33/custom-rules/refs/heads/main/mihomo/gaming-domains.yaml
@@ -583,13 +583,13 @@ rule-providers:
     url: https://raw.githubusercontent.com/OMchik33/custom-rules/refs/heads/main/mihomo/gaming-ips.yaml
     path: ./rule-sets/steam-ips.yaml
 
-    # Twitch — стриминговая платформа
+    # Twitch - стриминговая платформа
   twitch-domains:
     <<: *rule_behavior_domain_mrs
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/twitch.mrs
     path: ./rule-sets/twitch-domains.mrs
 
-    # Cloudflare — CDN и сервисы
+    # Cloudflare - CDN и сервисы
   cf-domains:
     <<: *rule_behavior_domain_mrs
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geosite/cloudflare.mrs
@@ -600,7 +600,7 @@ rule-providers:
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/meta/geo/geoip/cloudflare.mrs
     path: ./rule-sets/cf-ips.mrs
 
-    # Discord — чат и голосовые серверы
+    # Discord - чат и голосовые серверы
   discord-domains:
     <<: *rule_behavior_domain_mrs
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/discord.mrs
@@ -611,37 +611,37 @@ rule-providers:
     url: https://github.com/legiz-ru/mihomo-rule-sets/raw/main/other/discord-voice-ip-list.mrs
     path: ./rule-sets/discord-voiceips.mrs
 
-    # Google Gemini — ИИ-сервис Google
+    # Google Gemini - ИИ-сервис Google
   google-gemini:
     <<: *rule_behavior_domain_mrs
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/google-gemini.mrs
     path: ./rule-sets/google-gemini.mrs
 
-    # OpenAI — ИИ-сервисы (ChatGPT, API)
+    # OpenAI - ИИ-сервисы (ChatGPT, API)
   openai:
     <<: *rule_behavior_domain_mrs
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/openai.mrs
     path: ./rule-sets/openai.mrs
 
-    # Microsoft — сервисы Microsoft
+    # Microsoft - сервисы Microsoft
   microsoft:
     <<: *rule_behavior_domain_mrs
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/microsoft.mrs
     path: ./rule-sets/microsoft.mrs
 
-    # Anthropic — ИИ-сервисы (Claude)
+    # Anthropic - ИИ-сервисы (Claude)
   anthropic:
     <<: *rule_behavior_domain_mrs
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/anthropic.mrs
     path: ./rule-sets/anthropic.mrs
 
-    # Perplexity — ИИ-поисковик
+    # Perplexity - ИИ-поисковик
   perplexity:
     <<: *rule_behavior_domain_mrs
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/perplexity.mrs
     path: ./rule-sets/perplexity.mrs
 
-    # YouTube — видеохостинг
+    # YouTube - видеохостинг
   youtube:
     <<: *rule_behavior_domain_mrs
     url: https://github.com/MetaCubeX/meta-rules-dat/raw/meta/geo/geosite/youtube.mrs
@@ -662,7 +662,7 @@ rule-providers:
     # ВСТРОЕННЫЕ ПРАВИЛА (INLINE)
     # --------------------------------------------------------------------------
 
-    # misc-ai — список доменов для ИИ и инструментов разработки
+    # misc-ai - список доменов для ИИ и инструментов разработки
     # Задан напрямую, так как редко обновляется
   misc-ai:
     type: inline          # Тип: встроенный (не скачивать)
@@ -729,7 +729,7 @@ rule-providers:
 # Основной список правил маршрутизации
 # Правила обрабатываются сверху вниз, первое совпадение применяется
 rules:
-    # Локальная сеть — всегда напрямую (без прокси)
+    # Локальная сеть - всегда напрямую (без прокси)
     # Эти правила имеют высший приоритет для безопасности и производительности
   - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve        # Частная сеть Class A, RFC1918
   - IP-CIDR,100.64.0.0/10,DIRECT,no-resolve     # Сеть оператора RFC6598
@@ -754,10 +754,10 @@ rules:
     #  - AND,((NETWORK,udp),(DST-PORT,137)),REJECT
     #  - AND,((NETWORK,udp),(DST-PORT,138)),REJECT
     #  - AND,((NETWORK,udp),(DST-PORT,139)),REJECT
-    # QUIC-трафик (UDP/443) — специальная обработка
+    # QUIC-трафик (UDP/443) - специальная обработка
   - AND,((NETWORK,udp),(DST-PORT,443)),QUIC
 
-    # ИИ и инструменты разработки — приоритетная маршрутизация
+    # ИИ и инструменты разработки - приоритетная маршрутизация
   - RULE-SET,misc-ai,AI & Разработка
 
     # Мессенджеры и коммуникационные сервисы
@@ -784,14 +784,14 @@ rules:
 
     #  - RULE-SET,ru-bundle,SELECTOR
 
-    # Проверка IP — через прокси для анонимности
+    # Проверка IP - через прокси для анонимности
   - OR,((DOMAIN,ipwho.is),(DOMAIN,api.ip.sb),(DOMAIN,ipapi.co),(DOMAIN,ipinfo.io),(DOMAIN,2ip.io),(DOMAIN,2ip.ru)),SELECTOR
 
-    # Трафик от TUN и mixed-интерфейсов — в главный селектор
+    # Трафик от TUN и mixed-интерфейсов - в главный селектор
   - IN-NAME,tun-in,SELECTOR
   - IN-NAME,mixed-in,SELECTOR
 
-    # Правило по умолчанию — весь остальной трафик
+    # Правило по умолчанию - весь остальной трафик
   - MATCH,SELECTOR
 
 # ============================================================================

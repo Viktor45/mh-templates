@@ -8,7 +8,7 @@
 # Дополнение: https://raw.githubusercontent.com/Viktor45/mh-templates/refs/heads/main/area/user_sh/stargate-area.sh
 # ============================================================================
 
-# Запускаться только если используется соответствующий конфиг, иначе пропуск
+# Запускается только если используется соответствующий конфиг, иначе пропускается
 if [ "$CONFIG" = "stargate-area.yaml" ]; then
   # Использование:
   #   SG_COUNTRIES="US,NL,DE,GB,FR,JP,SG,CA,AU,KR,IN,BR,IT,ES,PL"
@@ -17,16 +17,16 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
   #   SG_FAILOVER="true" # true = разрешить блоки поиска отказоустойчивого
   #   SG_LOADBALANCE="true" # true = разрешить блоки поиска балансировки нагрузки
   # Для каждой страны создаются группы:
-  #   XX_AUTO        — автоматический выбор (FASTEST → FAILOVER → MANUAL → AUTO)
-  #   XX_LOADBALANCE — балансировка нагрузки
-  #   XX_MANUAL      — ручной выбор прокси страны
-  #   XX_FASTEST     — самый быстрый прокси страны (url-test) [если SG_FASTEST=true]
-  #   XX_FAILOVER    — резервный прокси страны (fallback) [если SG_FAILOVER=true]
+  #   XX_AUTO        - автоматический выбор (FASTEST → FAILOVER → AUTO)
+  #   XX_LOADBALANCE - балансировка нагрузки
+  #   XX_MANUAL      - ручной выбор прокси страны
+  #   XX_FASTEST     - самый быстрый прокси страны (url-test) [если SG_FASTEST=true]
+  #   XX_FAILOVER    - резервный прокси страны (fallback) [если SG_FAILOVER=true]
   # ============================================================================
-  # SG_CODE — режим фильтрации прокси по стране
-  #   false (по умолчанию) — фильтр только по флагу эмодзи (🇺🇸, 🇩🇪 и т.д.)
-  #   true — фильтр по флагу И коду страны (🇺🇸|US, 🇩🇪|DE и т.д.)
-  # По умолчанию false если не установлен
+  # SG_CODE - режим фильтрации прокси по стране
+  #   false (по умолчанию) - фильтр только по флагу эмодзи (🇺🇸, 🇩🇪 и т.д.)
+  #   true - фильтр по флагу И коду страны (🇺🇸|US, 🇩🇪|DE и т.д.)
+  # По умолчанию false, если не установлен
   SG_CODE="${SG_CODE:-false}"
   SG_FASTEST="${SG_FASTEST:-true}"
   SG_FAILOVER="${SG_FAILOVER:-true}"
@@ -95,7 +95,38 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
     esac
   }
 
-  # Если SG_COUNTRIES не задан — выходим без ошибок
+  # Родительный падеж названия страны для комментариев в фильтрах
+  get_country_name_gen() {
+    case "$1" in
+    US) echo "США" ;;
+    NL) echo "Нидерландов" ;;
+    DE) echo "Германии" ;;
+    GB) echo "Великобритании" ;;
+    FR) echo "Франции" ;;
+    JP) echo "Японии" ;;
+    SG) echo "Сингапура" ;;
+    CA) echo "Канады" ;;
+    AU) echo "Австралии" ;;
+    KR) echo "Южной Кореи" ;;
+    IN) echo "Индии" ;;
+    BR) echo "Бразилии" ;;
+    IT) echo "Италии" ;;
+    ES) echo "Испании" ;;
+    PL) echo "Польши" ;;
+    SE) echo "Швеции" ;;
+    FI) echo "Финляндии" ;;
+    NO) echo "Норвегии" ;;
+    CH) echo "Швейцарии" ;;
+    CZ) echo "Чехии" ;;
+    UA) echo "Украины" ;;
+    TR) echo "Турции" ;;
+    IL) echo "Израиля" ;;
+    AE) echo "ОАЭ" ;;
+    *) echo "$1" ;;
+    esac
+  }
+
+  # Если SG_COUNTRIES не задан - выходим без ошибок
   if [ -z "$SG_COUNTRIES" ]; then
     echo "stargate-area.sh: SG_COUNTRIES not set, skipping area groups generation"
     # Пустые переменные чтобы envsubst не упал
@@ -123,8 +154,9 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
     CODE=$(echo "$CODE" | tr '[:lower:]' '[:upper:]')
     FLAG=$(get_flag "$CODE")
     COUNTRY_NAME=$(get_country_name "$CODE")
+    COUNTRY_NAME_GEN=$(get_country_name_gen "$CODE")
 
-    # Если флаг не найден — пропускаем
+    # Если флаг не найден - пропускаем
     if [ -z "$FLAG" ]; then
       echo "stargate-area.sh: Unknown country code '$CODE', skipping"
       continue
@@ -133,7 +165,7 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
     echo "stargate-area.sh: Generating groups for $CODE ($COUNTRY_NAME) $FLAG"
 
     # --------------------------------------------------------------------------
-    # Генерируем AREA_GROUPS_LIST — список групп для proxy_list_all
+    # Генерируем AREA_GROUPS_LIST - список групп для proxy_list_all
     # --------------------------------------------------------------------------
     AREA_GROUPS_LIST="${AREA_GROUPS_LIST}
   - ${CODE}_AUTO"
@@ -146,7 +178,7 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
 "
 
     # --------------------------------------------------------------------------
-    # Генерируем AREA_SELECTOR_PROXIES — список для SELECTOR proxies
+    # Генерируем AREA_SELECTOR_PROXIES - список для SELECTOR proxies
     # --------------------------------------------------------------------------
     AREA_SELECTOR_PROXIES="${AREA_SELECTOR_PROXIES}      - ${CODE}_AUTO"
     if [ "$SG_LOADBALANCE" = "true" ]; then
@@ -162,14 +194,14 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
     # SG_CODE=true  → флаг + код: "(?i)🇺🇸|US"
     if [ "$SG_CODE" = "true" ]; then
       FILTER_PATTERN="${FLAG}|${CODE}"
-      FILTER_COMMENT="Только серверы ${COUNTRY_NAME} (флаг или код)"
+      FILTER_COMMENT="Только серверы ${COUNTRY_NAME_GEN} (флаг или код)"
     else
       FILTER_PATTERN="(?i)${FLAG}"
-      FILTER_COMMENT="Только серверы ${COUNTRY_NAME} (флаг)"
+      FILTER_COMMENT="Только серверы ${COUNTRY_NAME_GEN} (флаг)"
     fi
 
     # --------------------------------------------------------------------------
-    # Генерируем AREA_GROUPS_BLOCK — блоки proxy-groups для каждой страны
+    # Генерируем AREA_GROUPS_BLOCK - блоки proxy-groups для каждой страны
     # --------------------------------------------------------------------------
 
     # Формируем список прокси для AUTO в зависимости от настроек FASTEST и FAILOVER
@@ -182,7 +214,7 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
       AUTO_PROXIES_LIST="${AUTO_PROXIES_LIST}
       - ${CODE}_FAILOVER"
     fi
-    # если первые два отказали - перейти на основной AUTO, для сохранения связанности
+    # если первые два отказали - перейти на основной AUTO для сохранения связности
     AUTO_PROXIES_LIST="${AUTO_PROXIES_LIST}
       - AUTO"
 
@@ -190,7 +222,7 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
     # --------------------------------------------------------------------------
     # ${COUNTRY_NAME} ($CODE) ПРОКСИ-ГРУППЫ $FLAG
     # --------------------------------------------------------------------------
-    # ${CODE}_AUTO — полностью автоматический выбор (${COUNTRY_NAME})
+    # ${CODE}_AUTO - полностью автоматический выбор (${COUNTRY_NAME})
   - name: ${CODE}_AUTO
     type: fallback    # Переключение при отказе
     proxies:
@@ -200,7 +232,7 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
     # Добавляем блок LOADBALANCE, только если он включен
     if [ "$SG_LOADBALANCE" = "true" ]; then
       AREA_GROUPS_BLOCK="${AREA_GROUPS_BLOCK}
-    # ${CODE}_LOADBALANCE — распределение нагрузки (${COUNTRY_NAME})
+    # ${CODE}_LOADBALANCE - распределение нагрузки (${COUNTRY_NAME})
   - name: ${CODE}_LOADBALANCE
     type: load-balance              # Балансировка нагрузки
     strategy: ${LOADBALANCE_STRATEGY}
@@ -208,11 +240,11 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
     filter: \"${FILTER_PATTERN}\"
     exclude-type: *exclude_wg       # WG отдельно в AWG
     <<: *health_check               # Параметры тестирования
-    hidden: false                   # Скрыть из интерфейса
+    hidden: false                   # Показывать в интерфейсе
 "
     fi
       AREA_GROUPS_BLOCK="${AREA_GROUPS_BLOCK}
-    # ${CODE}_MANUAL — ручной выбор прокси (${COUNTRY_NAME})
+    # ${CODE}_MANUAL - ручной выбор прокси (${COUNTRY_NAME})
   - name: ${CODE}_MANUAL
     type: select    # Ручной выбор
     use: *providers_list    # Использовать провайдеры
@@ -222,7 +254,7 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
     # Добавляем блок FASTEST, только если он включен
     if [ "$SG_FASTEST" = "true" ]; then
       AREA_GROUPS_BLOCK="${AREA_GROUPS_BLOCK}
-    # ${CODE}_FASTEST — самый быстрый прокси (${COUNTRY_NAME})
+    # ${CODE}_FASTEST - самый быстрый прокси (${COUNTRY_NAME})
   - name: ${CODE}_FASTEST
     type: url-test    # Тестирование скорости
     use: *providers_list    # Использовать провайдеры
@@ -235,7 +267,7 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
     # Добавляем блок FAILOVER, только если он включен
     if [ "$SG_FAILOVER" = "true" ]; then
       AREA_GROUPS_BLOCK="${AREA_GROUPS_BLOCK}
-    # ${CODE}_FAILOVER — резервный прокси (${COUNTRY_NAME})
+    # ${CODE}_FAILOVER - резервный прокси (${COUNTRY_NAME})
   - name: ${CODE}_FAILOVER
     type: fallback    # Переключение при отказе
     use: *providers_list    # Использовать провайдеры

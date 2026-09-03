@@ -2,12 +2,12 @@
 
 # ============================================================================
 # STARGATE-CHAIN.SH
-# Автоматические цепочки через российские сервера
+# Автоматические цепочки через российские серверы
 # Источник: https://raw.githubusercontent.com/Viktor45/mh-templates/refs/heads/main/chain/stargate-chain.yaml
 # Дополнение: https://raw.githubusercontent.com/Viktor45/mh-templates/refs/heads/main/chain/user_sh/stargate-chain.sh
 # ============================================================================
 
-# Запускаться только если используется соответствующий конфиг, иначе пропуск
+# Запускается только если используется соответствующий конфиг, иначе пропускается
 if [ "$CONFIG" = "stargate-chain.yaml" ]; then
 
 # Для миграции (совместимости) с предыдущих версий, если нужно изменить URL или ожидаемый статус, а их не указали в переменных окружения
@@ -57,8 +57,8 @@ add_http_chain_provider() {
     url: \"${url}\"
     interval: ${PROVIDER_INTERVAL}
     override:
-      dialer-proxy: RU_AUTO           # Сначала идём через RU_AUTO
-      exclude-filter: *exclude_ru     # Исключаем RU чтобы не ходить петлями
+      dialer-proxy: RU_AUTO           # Сначала идем через RU_AUTO
+      exclude-filter: *exclude_ru     # Исключаем RU, чтобы не ходить петлями
       exclude-type: *exclude_wg       # WG исключен
 "
     PROVIDERS_CHAIN_LIST="${PROVIDERS_CHAIN_LIST}      - ${chain_name}
