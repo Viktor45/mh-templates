@@ -1,0 +1,54 @@
+payload:
+  #  xAI (Grok)
+  - DOMAIN-SUFFIX,x.ai
+  - DOMAIN-SUFFIX,grok.x.ai
+  - DOMAIN-SUFFIX,api.x.ai
+  - DOMAIN-KEYWORD,grok
+  #  Hugging Face
+  - DOMAIN-SUFFIX,huggingface.co
+  - DOMAIN-SUFFIX,hf.co
+  - DOMAIN-SUFFIX,hf.space
+  - DOMAIN-SUFFIX,huggingface.com
+  - DOMAIN-KEYWORD,huggingface
+  # Midjourney и другие ИИ для изображений
+  - DOMAIN-SUFFIX,midjourney.com
+  - DOMAIN-KEYWORD,midjourney
+  - DOMAIN-SUFFIX,stability.ai
+  - DOMAIN-SUFFIX,stablediffusionweb.com
+  - DOMAIN-SUFFIX,dreamstudio.ai
+  - DOMAIN-SUFFIX,runwayml.com
+  - DOMAIN-SUFFIX,runway.ml
+  # Character.AI и другие
+  - DOMAIN-SUFFIX,character.ai
+  - DOMAIN-SUFFIX,replicate.com
+  - DOMAIN-SUFFIX,cohere.ai
+  - DOMAIN-SUFFIX,cohere.com
+  # Инструменты для программистов
+  - DOMAIN-SUFFIX,datalore.io
+  - DOMAIN-SUFFIX,intellij.com
+  - DOMAIN-SUFFIX,intellij.net
+  - DOMAIN-SUFFIX,intellij.org
+  - DOMAIN-SUFFIX,jb.gg
+  - DOMAIN-SUFFIX,jetbrains.cloud
+  - DOMAIN-SUFFIX,jetbrains.com
+  - DOMAIN-SUFFIX,jetbrains.net
+  - DOMAIN-SUFFIX,jetbrains.space
+  - DOMAIN-SUFFIX,jetbrains.team
+  - DOMAIN-SUFFIX,kotlinlang.org
+  - DOMAIN-SUFFIX,youtrack.cloud
+  - DOMAIN-SUFFIX,replit.com
+  - DOMAIN-SUFFIX,repl.it
+  - DOMAIN-SUFFIX,stackoverflow.com
+  - DOMAIN-SUFFIX,ntc.party
+  - DOMAIN-SUFFIX,docker.com
+  - DOMAIN-SUFFIX,docker.io
+  - DOMAIN-SUFFIX,dockerstatic.com
+  - DOMAIN-SUFFIX,compose-spec.io
+  - DOMAIN-SUFFIX,npmjs.com
+  - DOMAIN-SUFFIX,pypi.org
+  - DOMAIN-SUFFIX,openrouter.ai
+  - DOMAIN-SUFFIX,tokenrouter.com
+  - DOMAIN-SUFFIX,b.ai
+  - DOMAIN-SUFFIX,duck.ai
+  - DOMAIN-SUFFIX,z.ai
+  - DOMAIN-SUFFIX,minimax.io
