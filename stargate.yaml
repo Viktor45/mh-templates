@@ -841,7 +841,7 @@ rule-providers:
 
   # misc-ai - список доменов для ИИ и инструментов разработки
   misc-ai:
-    <<: *rule_behavior_domain_yaml
+    <<: *rule_behavior_classical_yaml
     url: https://raw.githubusercontent.com/Viktor45/mh-templates/refs/heads/main/rules/ai-dev.yaml
     path: ./rule-sets/ai-dev.yaml
 # ============================================================================
