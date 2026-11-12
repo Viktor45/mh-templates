@@ -6,3 +6,4 @@
 entrypoint.sh
 default_config.yaml
 AGENTS.md
+anti-slop/

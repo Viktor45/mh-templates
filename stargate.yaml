@@ -121,9 +121,12 @@ dns:
   listen: $DNS_LISTEN                        # DNS-сервис
   cache-algorithm: $DNS_CACHE_ALGORITHM      # Алгоритм кеширования
   prefer-h3: $DNS_PREFER_H3                  # Предпочитать использование http/3 для DOH
+  respect-rules: $DNS_RESPECT_RULES          # Резолвить DNS-запросы по правилам маршрутизации
+  ipv6: $IPV6                                # Отдавать AAAA-записи только при включенном IPv6
   enhanced-mode: $DNS_ENHANCED_MODE          # Режим обработки DNS
   fake-ip-range: $DNS_FAKE_IP_RANGE          # Настройка диапазона IP для режима fakeip
   fake-ip-ttl: $DNS_FAKE_IP_TTL              # TTL, возвращаемый запросами fakeip
+  fake-ip-filter-mode: $DNS_FAKE_IP_FILTER_MODE    # Режим списка fake-ip-filter: blacklist или whitelist
   fake-ip-filter:                            # Исключить из fake-ip ресурсы lan/captive/time/stun
     - +.lan
     - +.local
@@ -138,8 +141,9 @@ dns:
     - +.ntp.org
     - +.stun.*.*
     - +.stun.*.*.*
-  nameserver:
-    - system    # Использовать системный DNS (от роутера/провайдера)
+  default-nameserver: $DNS_DEFAULT_NAMESERVER    # DNS для резолва адресов из nameserver (bootstrap)
+  nameserver: $DNS_NAMESERVER                    # Основные DNS-серверы (по умолчанию system, список через |)
+  proxy-server-nameserver: $DNS_PROXY_SERVER_NAMESERVER    # DNS для резолва имен прокси-серверов
 
 # ============================================================================
 # === СЛУШАТЕЛИ (LISTENERS) ===

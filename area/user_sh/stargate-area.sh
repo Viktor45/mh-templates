@@ -22,7 +22,6 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
   #   XX_MANUAL      - ручной выбор прокси страны
   #   XX_FASTEST     - самый быстрый прокси страны (url-test) [если SG_FASTEST=true]
   #   XX_FAILOVER    - резервный прокси страны (fallback) [если SG_FAILOVER=true]
-  # ============================================================================
   # SG_CODE - режим фильтрации прокси по стране
   #   false (по умолчанию) - фильтр только по флагу эмодзи (🇺🇸, 🇩🇪 и т.д.)
   #   true - фильтр по флагу И коду страны (🇺🇸|US, 🇩🇪|DE и т.д.)
@@ -138,7 +137,6 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
     exit 0
   fi
 
-  # Инициализируем переменные
   AREA_GROUPS_BLOCK=""
   AREA_GROUPS_LIST=""
   AREA_SELECTOR_PROXIES=""
@@ -146,17 +144,14 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
   # Разбиваем SG_COUNTRIES по запятой во временный файл
   echo "$SG_COUNTRIES" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | grep -v '^$' >/tmp/.area_countries.$$
 
-  # Обрабатываем каждую страну
   while read -r CODE; do
     [ -z "$CODE" ] && continue
 
-    # Приводим к верхнему регистру
     CODE=$(echo "$CODE" | tr '[:lower:]' '[:upper:]')
     FLAG=$(get_flag "$CODE")
     COUNTRY_NAME=$(get_country_name "$CODE")
     COUNTRY_NAME_GEN=$(get_country_name_gen "$CODE")
 
-    # Если флаг не найден - пропускаем
     if [ -z "$FLAG" ]; then
       echo "stargate-area.sh: Unknown country code '$CODE', skipping"
       continue
@@ -279,7 +274,6 @@ if [ "$CONFIG" = "stargate-area.yaml" ]; then
 
   done </tmp/.area_countries.$$
 
-  # Чистим временный файл
   rm -f /tmp/.area_countries.$$
 
   # Экспортируем переменные для использования в шаблоне

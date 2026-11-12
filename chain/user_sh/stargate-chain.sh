@@ -16,9 +16,8 @@ export HEALTH_CHECK_URL="${HEALTH_CHECK_URL:-https://www.gstatic.com/generate_20
 export HEALTH_CHECK_EXPECTED_STATUS="${HEALTH_CHECK_EXPECTED_STATUS:-204}"
 export PROVIDER_INTERVAL="${PROVIDER_INTERVAL:-3600}"
 
-# Перепишем оригинальные переменные подписок для использования в stargate-chain.yaml
-# на свои, чтобы не зависеть от оригинала, если там что-то поменялось внезапно
-# что мы не отследили оперативно
+# Перепишем оригинальные переменные подписок на свои,
+# чтобы не зависеть от внезапных изменений в entrypoint.sh
 
 PROVIDERS_BLOCK=""
 PROVIDERS_LIST=""
@@ -192,6 +191,20 @@ while IFS='=' read -r name value; do
         # Добавляем цепочку для этого же источника
       add_http_chain_provider "$name" "$value_clean"
       ;;
+    SRV[0-9]*)
+        # SRV с http(s)-ссылкой или deeplink-схемой (happ/v2raytun/incy) - это подписка,
+        # как и SUB*, обрабатываем так же (паритет с entrypoint.sh, который
+        # направляет такие SRV в HTTPVehicle и вызывает hpwnr)
+      srv_scheme=$(printf '%s' "$value" | sed 's/:.*//' | tr '[:upper:]' '[:lower:]')
+      case "$srv_scheme" in
+        http|https|happ|v2raytun|incy)
+            # Экранируем кавычки в URL, чтобы YAML не сломался
+          value_clean=$(printf '%s' "$value" | sed 's/"/\\"/g')
+          add_http_provider "$name" "$value_clean"
+          add_http_chain_provider "$name" "$value_clean"
+          ;;
+      esac
+      ;;
   esac
 done << EOF
 $(env)
@@ -202,7 +215,9 @@ if [ -f "$awg_file" ]; then
 add_provider "AWG" "file" "$awg_file"
 fi
 
-if [ -f "$srv_file" ]; then
+# -s, а не -f: entrypoint создает srv_file при любом SRV*, но подключает его
+# только если там есть содержимое (http/deeplink-подписки туда не попадают)
+if [ -s "$srv_file" ]; then
 add_provider "SRV" "file" "$srv_file"
 fi
 
