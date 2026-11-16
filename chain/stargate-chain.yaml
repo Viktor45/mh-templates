@@ -1,7 +1,7 @@
 # ============================================================================
 # ШАБЛОН STARGATE-CHAIN
 # Расширенная конфигурация Mihomo/Meta с поддержкой цепочек прокси
-# Маршрутизация трафика через российские серверы для ускорения интернета
+# Маршрутизация трафика через российские серверы (двойная маршрутизация)
 # Документация: https://github.com/MetaCubeX/mihomo/blob/Meta/docs/config.yaml
 # Источник: https://raw.githubusercontent.com/Viktor45/mh-templates/refs/heads/main/chain/stargate-chain.yaml
 # Дополнение: https://raw.githubusercontent.com/Viktor45/mh-templates/refs/heads/main/chain/user_sh/stargate-chain.sh

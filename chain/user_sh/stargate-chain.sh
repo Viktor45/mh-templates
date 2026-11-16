@@ -35,6 +35,36 @@ set_default_var() {
     printf '%s' "$value"
 }
 
+# YAML-кавычки для значения (аналог yaml_quote из entrypoint.sh)
+chain_yaml_quote() {
+    sed 's/\\/\\\\/g; s/"/\\"/g; s/.*/"&"/'
+}
+
+# Список YAML из строки с разделителем (аналог format_yaml_list из entrypoint.sh)
+# Аргументы: значение, отступ, разделитель, кавычки (1/0), раскрытие ENV (1/0)
+chain_format_list() {
+    local value="$1"
+    local indent="${2:-2}"
+    local separator="${3:-|}"
+    local quote="${4:-0}"
+    local expand="${5:-1}"
+
+    if [ "$expand" = "1" ]; then
+        eval "value=\"$value\""
+    fi
+
+    printf '%s\n' "$value" |
+        tr "$separator" '\n' |
+        while IFS= read -r item; do
+            item=$(printf '%s' "$item" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')
+            [ -n "$item" ] || continue
+            if [ "$quote" = "1" ]; then
+                item=$(printf '%s' "$item" | chain_yaml_quote)
+            fi
+            printf '\n%*s- %s' "$indent" '' "$item"
+        done
+}
+
 # Блок health-check провайдера с возможностью точечного переопределения
 build_health_check() {
     local name="$1"
@@ -118,6 +148,16 @@ build_override() {
         esac
     done
 
+    # override-expr: список выражений yq для узлов провайдера, разделитель #
+    # Общая PROVIDER_OVERRIDE_EXPR и индивидуальная PROVIDER_OVERRIDE_EXPR_<ИМЯ>
+    local override_expr_raw="$(set_default_var "$name" "PROVIDER_OVERRIDE_EXPR")"
+    if [ -n "$override_expr_raw" ]; then
+        local override_expr_yaml="$(chain_format_list "$override_expr_raw" 8 '#' 1 0)"
+        if [ -n "$override_expr_yaml" ]; then
+            override="${override}"$'\n'"      override-expr:${override_expr_yaml}"
+        fi
+    fi
+
     [ -n "$override" ] && printf '%s' "    override:${override}"
     return 0
 }
@@ -164,13 +204,23 @@ add_http_chain_provider() {
     interval: ${provider_interval}
     header:$(build_headers "$name")"
 
+    # override-expr из тех же переменных, что и у обычного провайдера:
+    # выражения применяются после фиксированных override-полей цепочки
+    local override_expr_yaml=""
+    local override_expr_raw="$(set_default_var "$name" "PROVIDER_OVERRIDE_EXPR")"
+    if [ -n "$override_expr_raw" ]; then
+        override_expr_yaml="$(chain_format_list "$override_expr_raw" 8 '#' 1 0)"
+    fi
+    [ -n "$override_expr_yaml" ] && override_expr_yaml="
+      override-expr:${override_expr_yaml}"
+
     PROVIDERS_CHAIN_BLOCK="${PROVIDERS_CHAIN_BLOCK}  ${chain_name}:
     type: http
     url: \"${url}\"${sub_params}
     override:
       dialer-proxy: RU_AUTO           # Сначала идем через RU_AUTO
       exclude-filter: *exclude_ru     # Исключаем RU, чтобы не ходить петлями
-      exclude-type: *exclude_wg       # WG исключен
+      exclude-type: *exclude_wg       # WG исключен${override_expr_yaml}
 $(build_health_check "$name")
 "
     PROVIDERS_CHAIN_LIST="${PROVIDERS_CHAIN_LIST}      - ${chain_name}
